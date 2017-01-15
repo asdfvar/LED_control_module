@@ -1,0 +1,5 @@
+bin
+obj
+.vs
+SolarsystemController.csproj.user
+SolarsystemController_TemporaryKey.pfx
