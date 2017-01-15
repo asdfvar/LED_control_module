@@ -207,6 +207,13 @@ class WEditCalendar : public WMenuBase {
 
 extern WEditCalendar edit_calendar_menu;
 
+class WNewButton : public WMenuBase {
+    virtual void paint();
+    virtual void touch(uint16_t x, uint16_t y);
+};
+
+extern WNewButton new_button_menu;
+
 class WSetRoutine : public WMenuBase {
     virtual void paint();
     virtual void touch(uint16_t x, uint16_t y);

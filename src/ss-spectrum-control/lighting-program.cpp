@@ -190,6 +190,12 @@ void LightingProgram::saveCalendar()
     saveEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal));
 }
 
+void LightingProgram::saveNewButton()
+{
+    // FIXME: CALENDAR_OFFSET
+    saveEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal));
+}
+
 void LightingProgram::loadSettings()
 {
     if (!loadEEPBytes(SETTINGS_OFFSET, &settings, sizeof(settings))) {

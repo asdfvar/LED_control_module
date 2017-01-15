@@ -12,6 +12,7 @@ WBasicEditProgram      basic_edit_program_menu;
 WAdvancedEditProgram   advanced_edit_program_menu;
 WAreYouSure            are_you_sure_menu;
 WEditCalendar          edit_calendar_menu;
+WNewButton             new_button_menu;
 WSetRoutine            set_routine_menu;
 WSelectProgram         select_program_menu;
 WSerialActive          serial_active_menu;

@@ -65,6 +65,9 @@ class LightingProgram {
 	// save calendar to the EEPROM
 	void saveCalendar();
 
+	// save new button to the EEPROM
+	void saveNewButton();
+
 	// edit active program index
 	inline uint8_t getActiveProgram() const { return settings.active_program; }
 	void setActiveProgram(uint8_t index);
