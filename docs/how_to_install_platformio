@@ -1,0 +1,61 @@
+sudo pip install --egg scons --install-option="--no-install-man"
+sudo pip install platformio
+
+# initialize your environment:
+platformio init --board-nodencu
+
+
+# Install platformio
+sudo pip install -U platformio
+
+# Make a new project directory and initialize an empty project
+mkdir Sites/p5js_plot
+cd Sites/p5js_plot
+platformio init
+
+# Configure platformio.ini with boards
+platformio init --board=uno
+platformio init --board=teensy31
+platformio init --board nodemcuv2
+
+# Put some arduino code in src/main.cpp
+/*
+ * Blink
+ * Turns on an LED on for one second,
+ * then off for one second, repeatedly.
+ */
+#include "Arduino.h"
+
+void setup()
+{
+  // initialize LED digital pin as an output.
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop()
+{
+  // turn the LED on (HIGH is the voltage level)
+  digitalWrite(LED_BUILTIN, HIGH);
+  // wait for a second
+  delay(1000);
+  // turn the LED off by making the voltage LOW
+  digitalWrite(LED_BUILTIN, LOW);
+   // wait for a second
+  delay(1000);
+}
+
+# Upload code to arduino
+platformio run --target upload
+
+# Additional info
+# Serial ports
+# List serial ports
+platformio serialports list
+platformio serialports monitor
+
+# platformio.ini for nodemcu needs to know the serial port
+[env:nodemcuv2]
+platform = espressif
+framework = arduino
+board = nodemcuv2
+upload_port = /dev/ttyUSB0

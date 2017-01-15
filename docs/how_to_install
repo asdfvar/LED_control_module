@@ -1,0 +1,118 @@
+# The following text obtained from http://maxembedded.com/2015/06/setting-up-avr-gcc-toolchain-on-linux-and-mac-os-x/#step2
+
+Setting up AVR-GCC Toolchain on Linux and Mac OS X
+Windows users have been enjoying various awesome tools to help with their AVR development process like the Atmel Studio, Codevision AVR, WinAVR, IAR Embedded Workbench, etc. This doesn’t mean that Mac and Linux users are at any unfair advantage. The avr-gcc toolchain supports Unix based OS like Linux and Mac OS X inherently.
+In this post I will show how to install the avr-gcc toolchain and avrdude on Mac OS X and Linux. If you are using a Mac and want to save the trouble of going through these steps, simply install CrossPack for AVR Development and follow the instructions in the manual. I might go over it sometime in future though.
+However if you really want to learn how to set up a cross-compiler, write Makefiles and use command line tools to get things done, I highly recommend doing the following steps. And trust me, they are pretty straightforward.
+Step 1: Install Homebrew (Mac OS X only)
+Step 2: Install avr-gcc toolchain
+Step 3: Install avrdude
+Step 4: Test the toolchain
+Busy and just want to get s#!t done? Read the summary!
+Step 1: Install Homebrew (Mac OS X only)
+
+This step is not required for Linux users since almost all Linux distribution comes with a package manager.
+Homebrew is the new super-awesome package manager for Mac OS X. Install it by typing (or pasting) the following in terminal:
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+Step 2: Install avr-gcc toolchain
+Mac OS X
+First tap the repository:
+brew tap osx-cross/avr
+Then install the latest version of avr-libc (version 4.9.2 at the time of writing):
+brew install avr-libc
+This will pull avr-binutils and avr-gcc along with it as well. The second steps takes a little while to install everything, so go get yourself some tea in the meantime.
+The Homebrew repository doesn’t has the avr-gdb formulae yet. If you need the avr-gdb debugger, go for the AVR CrossPack.
+Linux
+The following steps are for Debian/Ubuntu Linux. For other Linux distributions, please install read this.
+It is usually a good idea to update all the packages you already have installed.
+sudo apt-get update
+sudo apt-get upgrade all
+Then install the required packages.
+sudo apt-get install gcc-avr binutils-avr avr-libc
+You can also install gdb-avr is you like. It is useful for in-system debugging/emulation.
+sudo apt-get install gdb-avr
+Once done, type avr- in the terminal and press tab twice (do not hit enter). You should be able to see all the tools installed for you.
+￼
+avr-gcc tools installed on Mac
+Step 3: Install avrdude
+
+AVR-GCC is a toolchain that will help you with the software development process, but doesn’t do anything about burning the final executable (the hex file) to the microcontroller. For that we need to install AVR Downloader UploaDEr (avrdude).
+Mac OS X
+We will again use Homebrew to install it.
+brew install avrdude --with-usb
+Linux
+The following steps are for Debian/Ubuntu Linux. For other Linux distributions, please install read this.
+sudo apt-get install avrdude
+This should be pretty quick. Once installed, type avrdude -v in the terminal to check if it is installed properly.
+Step 4: Test the toolchain
+
+That’s all we need for now. Let’s test whether it works or not. I have used the LED blinking code called led.c for ATmega32 for demonstration. Refer to this post to understand what it does.
+Once the tools are installed no matter how, everything from here remains the same for both Mac OS X and Linux.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+#ifndef F_CPU
+#define F_CPU 16000000UL // or whatever may be your frequency
+#endif
+ 
+#include <avr/io.h>
+#include <util/delay.h>                // for _delay_ms()
+ 
+int main(void)
+{
+    DDRC = 0x01;                       // initialize port C
+    while(1)
+    {
+        // LED on
+        PORTC = 0b00000001;            // PC0 = High = Vcc
+        _delay_ms(500);                // wait 500 milliseconds
+ 
+        //LED off
+        PORTC = 0b00000000;            // PC0 = Low = 0v
+        _delay_ms(500);                // wait 500 milliseconds
+    }
+}
+Assuming the name of the file is led.c, type the following in the terminal and check if the led.hex file is generated or not. The code should compile without any errors. Don’t worry if you don’t understand what the commands do or mean, we will discuss about them in detail in the next post.
+1
+2
+3
+avr-gcc -g -Os -mmcu=atmega32 -c led.c
+avr-gcc -g -mmcu=atmega32 -o led.elf led.o
+avr-objcopy -j .text -j .data -O ihex led.elf led.hex
+Type cat led.hex in the terminal and see if the hex file is generated. If you see something like in the image below, you’re all set! :)
+￼We will need the hardware to test avrdude, so let’s just skip it for now. In my next post, I’ll show you how you can use the avrdude to transfer the hex file generated above to run on an actual hardware. If you have any questions, please ask them below. Thank you.
+Summary
+
+Here’s what you gotta do on Mac OS X:
+1
+2
+3
+4
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap osx-cross/avr
+brew install avr-libc
+brew install avrdude --with-usb
+And here’s what you gotta do on Debian/Ubuntu Linux:
+sudo apt-get install gcc-avr binutils-avr gdb-avr avr-libc avrdude
+For all other Linux distributions, read this.
+Thanks for reading! Subscribe and stay updated!
+Written by Mayank Prasad
+Last updated on June 14, 2015
