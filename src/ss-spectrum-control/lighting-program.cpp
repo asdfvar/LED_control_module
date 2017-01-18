@@ -12,7 +12,7 @@
 #define SETTINGS_OFFSET      (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
 #define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
 #define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof(struct lighting))
-#define NEW_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint8_t ))
+#define NEW_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -197,7 +197,7 @@ void LightingProgram::saveLightControl()
     saveEEPBytes(LIGHT_CONTROL_OFFSET, &light, sizeof(light));
 }
 
-void LightingProgram::saveLightControlNew( uint8_t light_level)
+void LightingProgram::saveLightControlNew( uint16_t light_level)
 {
     saveEEPBytes(NEW_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
 }
@@ -210,9 +210,9 @@ void LightingProgram::loadLightControl()
     }
 }
 
-uint8_t LightingProgram::loadLightControlNew( void )
+uint16_t LightingProgram::loadLightControlNew( void )
 {
-    uint8_t light_level = 0;
+    uint16_t light_level = 0;
     if (!loadEEPBytes(NEW_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
     {
        light_level = 0;

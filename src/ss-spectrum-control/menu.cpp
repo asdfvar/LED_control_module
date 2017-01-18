@@ -151,6 +151,16 @@ void WLabel::paint(uint8_t  m,
     paint(buf, fg, bg);
 }
 
+void WLabel::paint(uint16_t m,
+                   uint16_t fg,
+                   uint16_t bg) const
+{
+    char buf[8];
+    int z = m;
+    snprintf(buf, sizeof(buf), "%d", z);
+    paint(buf, fg, bg);
+}
+
 void WLabel::paint_two_digits(uint8_t  m,
                               uint16_t fg,
                               uint16_t bg) const
@@ -158,5 +168,15 @@ void WLabel::paint_two_digits(uint8_t  m,
     char buf[3];
     int z = m;
     snprintf(buf, sizeof(buf), "%2.2d", z);
-    paint(buf, fg, bg);
+    paint( buf, fg, bg);
+}
+
+void WLabel::paint_four_digits(uint16_t m,
+                               uint16_t fg,
+                               uint16_t bg) const
+{
+    char buf[8];
+    int z = m;
+    snprintf( buf, sizeof(buf), "%4.4d", z);
+    paint( buf, fg, bg);
 }

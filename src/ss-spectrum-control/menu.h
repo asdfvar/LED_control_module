@@ -47,9 +47,17 @@ class WLabel {
                    uint16_t fg,
                    uint16_t bg) const;
 
+        void paint(uint16_t m,
+                   uint16_t fg,
+                   uint16_t bg) const;
+
         void paint_two_digits(uint8_t m,
                               uint16_t fg,
                               uint16_t bg) const;
+
+        void paint_four_digits(uint16_t m,
+                               uint16_t fg,
+                               uint16_t bg) const;
 
         bool hit(uint16_t hx, uint16_t hy) const;
 

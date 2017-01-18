@@ -82,7 +82,7 @@ static void paint_new_phase()
     days2wd(phase->days, weeks, days);
 
     WLabel::paint(F("Phase:"),      5, 0, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
-    phase_label.paint(phase_index + 1, ILI9341_GREEN, ILI9341_BLACK);
+    phase_label.paint( (uint8_t)(phase_index + 1), ILI9341_GREEN, ILI9341_BLACK);
 
     update_widget_for(E_WEEKS, ILI9341_BLACK);
     update_widget_for(E_DAYS, ILI9341_BLACK);

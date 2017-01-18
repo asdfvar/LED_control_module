@@ -103,7 +103,8 @@ static void paint_new_step()
     was_active = step->active;
 
     prog_label.paint(F("Step:"), ILI9341_GREEN, ILI9341_BLACK);
-    prog_index.paint(step_index + 1, ILI9341_GREEN, ILI9341_BLACK);
+    uint8_t arg_in = step_index + 1;
+    prog_index.paint( arg_in, ILI9341_GREEN, ILI9341_BLACK);
 
     update_widget_for(E_HOURS, ILI9341_BLACK);
     WLabel::paint(F(":"),      80, 60, ILI9341_GREEN, ILI9341_BLACK, 4, 0);

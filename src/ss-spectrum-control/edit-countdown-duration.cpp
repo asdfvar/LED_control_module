@@ -7,7 +7,7 @@ static int countdown_duration_minutes;
 
 static void update()
 {
-    duration_label.paint(countdown_duration_minutes, ILI9341_BLACK, ILI9341_WHITE);
+    duration_label.paint( (uint8_t)countdown_duration_minutes, ILI9341_BLACK, ILI9341_WHITE);
 }
 
 void WEditCountdownDuration::paint()

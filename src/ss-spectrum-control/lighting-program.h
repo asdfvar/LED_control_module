@@ -79,10 +79,10 @@ class LightingProgram
         void saveLightControl();
 
         // load light control level
-        uint8_t loadLightControlNew( void );
+        uint16_t loadLightControlNew( void );
 
         // save lighting control parameters to the EEPROM
-        void saveLightControlNew( uint8_t );
+        void saveLightControlNew( uint16_t );
 
 	// edit active program index
 	inline uint8_t getActiveProgram() const { return settings.active_program; }

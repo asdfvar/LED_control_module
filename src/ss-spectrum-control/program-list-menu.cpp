@@ -22,7 +22,7 @@ static void paint_active_button()
 static void paint_new_program()
 {
     WLabel::paint(F("Program#"),   5,  0, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
-    prog_index.paint(lp.getLoadedProgram() + 1, ILI9341_GREEN, ILI9341_BLACK);
+    prog_index.paint( (uint8_t)(lp.getLoadedProgram() + 1), ILI9341_GREEN, ILI9341_BLACK);
     paint_active_button();
 
     WLabel::paint(F("Name:"),      5, 55, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
