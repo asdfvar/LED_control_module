@@ -11,6 +11,7 @@
 
 #define SETTINGS_OFFSET (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
 #define CALENDAR_OFFSET (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
+#define NEW_BUTTON_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof(struct calendar))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -192,8 +193,7 @@ void LightingProgram::saveCalendar()
 
 void LightingProgram::saveNewButton()
 {
-    // FIXME: CALENDAR_OFFSET
-    saveEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal));
+    saveEEPBytes(NEW_BUTTON_OFFSET, &cal, sizeof(cal));
 }
 
 void LightingProgram::loadSettings()
@@ -390,7 +390,8 @@ void LightingProgram::forceStep()
 
 void LightingProgram::begin()
 {
-    if (sizeof(program) > EEPROM.length()) {
+    if (sizeof(program) > EEPROM.length())
+    {
 	Serial.println("woops");
 	Serial.println(sizeof(program));
 	Serial.println(EEPROM.length());
