@@ -51,7 +51,7 @@ static void start_editing(enum edit_list n)
         update_widget_for(am_editing, ILI9341_CYAN);
 }
 
-void WNewButton::paint()
+void WLightControl::paint()
 {
     lp.stop();
 
@@ -88,11 +88,11 @@ static void edit_value(int chg)
     update_widget_for(am_editing, ILI9341_CYAN);
 }
 
-void WNewButton::touch(uint16_t x, uint16_t y)
+void WLightControl::touch(uint16_t x, uint16_t y)
 {
     if (save_button.hit(x, y)) {
         lp.setCycleTime(week - 1, day - 1);
-        lp.saveNewButton();
+        lp.saveLightControl();
         lp.restart();
         menu.setMenu(setup_menu);
     } 

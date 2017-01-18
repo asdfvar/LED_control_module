@@ -17,28 +17,38 @@ struct program_step {
     uint8_t minute;
 };
 
-struct program {
+struct program
+{
     char name[PROGRAM_NAME_LEN + 1];
     struct program_step steps[PROGRAM_STEPS];
 };
 
-struct program_settings {
+struct program_settings
+{
     uint8_t fade_duration_minutes;
     uint8_t active_program;
 };
 
-struct phase {
+struct phase
+{
     uint8_t active:1;
     uint8_t program:7;
     uint8_t days;
 };
 
-struct calendar {
+struct calendar
+{
     uint32_t zeroDays;
     struct phase phases[NPHASES];
 };
 
-class LightingProgram {
+struct lighting
+{
+    float light_level;
+};
+
+class LightingProgram
+{
     public:
 
 	// load program from eep; start running!
@@ -65,8 +75,8 @@ class LightingProgram {
 	// save calendar to the EEPROM
 	void saveCalendar();
 
-	// save new button to the EEPROM
-	void saveNewButton();
+        // save lighting control parameters to the EEPROM
+	void saveLightControl();
 
 	// edit active program index
 	inline uint8_t getActiveProgram() const { return settings.active_program; }

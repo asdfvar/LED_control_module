@@ -9,9 +9,9 @@
 #define EEPROM_SIZE      0x800
 #define CRC_LENGTH       4
 
-#define SETTINGS_OFFSET (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
-#define CALENDAR_OFFSET (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
-#define NEW_BUTTON_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof(struct calendar))
+#define SETTINGS_OFFSET      (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
+#define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
+#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof(struct lighting))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -191,9 +191,9 @@ void LightingProgram::saveCalendar()
     saveEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal));
 }
 
-void LightingProgram::saveNewButton()
+void LightingProgram::saveLightControl()
 {
-    saveEEPBytes(NEW_BUTTON_OFFSET, &cal, sizeof(cal));
+    saveEEPBytes(LIGHT_CONTROL_OFFSET, &cal, sizeof(cal));
 }
 
 void LightingProgram::loadSettings()
