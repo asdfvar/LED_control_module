@@ -39,12 +39,12 @@ struct phase
 struct calendar
 {
     uint32_t zeroDays;
-    struct phase phases[NPHASES];
+    struct   phase phases[NPHASES];
 };
 
 struct lighting
 {
-    float light_level;
+    uint32_t light_level;
 };
 
 class LightingProgram
@@ -76,7 +76,13 @@ class LightingProgram
 	void saveCalendar();
 
         // save lighting control parameters to the EEPROM
-	void saveLightControl();
+        void saveLightControl();
+
+        // load light control level
+        uint8_t loadLightControlNew( void );
+
+        // save lighting control parameters to the EEPROM
+        void saveLightControlNew( uint8_t );
 
 	// edit active program index
 	inline uint8_t getActiveProgram() const { return settings.active_program; }
@@ -159,9 +165,10 @@ class LightingProgram
 	bool calendar_enabled;
 	uint8_t current_step;
 	uint8_t current_phase;
-	struct calendar cal; // growing phases calendar
+	struct calendar cal;              // growing phases calendar
+        struct lighting light;
 	struct program_settings settings; // settings stored in eeprom
-	uint8_t loaded_program; // index of program loaded into 'program'
+	uint8_t loaded_program;           // index of program loaded into 'program'
 
 	float color_delta[3]; // delta to add to current
 	float color_value[3]; // current, unrounded value for smoothing
@@ -174,7 +181,8 @@ class LightingProgram
 	struct program program;
 	void loadSettings();
 	void saveSettings();
-	void loadCalendar();
+        void loadCalendar();
+        void loadLightControl();
 	void sort(void);
 	uint8_t find(const DateTime& now);
 	void forceStep();
