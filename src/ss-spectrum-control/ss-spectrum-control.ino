@@ -7,7 +7,7 @@
 #include "menu-system.h"
 #include "touch-debounce.h"
 
-//#define ROTATE_DISPLAY
+#define ROTATE_DISPLAY
 
 // The display also uses hardware SPI, plus #9 & #10
 #define TFT_CS 10
