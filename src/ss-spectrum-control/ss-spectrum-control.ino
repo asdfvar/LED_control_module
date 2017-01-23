@@ -9,6 +9,8 @@
 
 #define ROTATE_DISPLAY
 
+static WLabel debug_display( 2, 201, 60 );
+
 // The display also uses hardware SPI, plus #9 & #10
 #define TFT_CS 10
 #define TFT_DC 9
@@ -97,12 +99,23 @@ void setup(void)
     // origin = left,top landscape (USB left upper)
     tft.setRotation(3); 
     menu.begin();
+
+ctp.writeRegister8(0x87, 10);
+ctp.writeRegister8(0x88, 8);
+ctp.writeRegister8(0x89, 40);
+ctp.writeRegister8(0x91, 220);
+ctp.writeRegister8(0x92, 136);
+ctp.writeRegister8(0x93, 216);
+ctp.writeRegister8(0x94, 255);
+ctp.writeRegister8(0x95, 251);
+ctp.writeRegister8(0x96, 170);
 }
 
 void loop()
 {
     update_now();
-    if (now.second() != last_second) {
+    if (now.second() != last_second)
+    {
 	last_second = now.second();
 	lp.tick();
 	menu.tick();
@@ -127,6 +140,17 @@ void loop()
        // Rotate back
        x = map(x, 0, 320, 320, 0);
        y = map(y, 0, 240, 240, 0);
+#endif
+
+#if 0
+WLabel::paint(F("x"),
+              x,
+              y,
+              ILI9341_RED,
+              ILI9341_BLUE,
+              10,
+              10);
+debug_display.paint_four_digits( (uint16_t)ctp.readRegister8(0x03), ILI9341_BLACK, ILI9341_WHITE);
 #endif
 
        debouncer.hit(x, y);

@@ -3,28 +3,28 @@
 
 #include <stdint.h>
 
-/* TODO:
- * for now this is doing simple edge detection
- * but it should avg several samples to get an accurate hit
- * we could also handle long/short presses here too, and/or repeats
- * -RGF
- */
+#define MAX_INDEX 4
 
-class TouchDebounce {
-public:
-    void begin(void);
-    void hit(uint16_t x, uint16_t y);
-    void nohit(void);
+class TouchDebounce
+{
+   public:
+       void begin( void );
+       void hit(uint16_t x, uint16_t y);
+       void nohit( void );
 
-    bool touched();
-    int x();
-    int y();
+       bool touched( void );
+       bool long_hit( void );
+       int  x( void );
+       int  y( void );
 
-private:
-    bool last_hit;
-    bool did_touch;
-    int last_x;
-    int last_y;
+   private:
+       bool last_hit;
+       bool did_touch;
+       int last_x;
+       int last_y;
+
+       uint16_t index;
+       int16_t accum_x[MAX_INDEX], accum_y[MAX_INDEX];
 };
 
 #endif /* TOUCH_DEBOUNCE_H */
