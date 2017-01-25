@@ -7,9 +7,12 @@
 #include "menu-system.h"
 #include "touch-debounce.h"
 
-#define ROTATE_DISPLAY
+//#define ROTATE_DISPLAY
 
-static WLabel debug_display( 2, 201, 60 );
+static WLabel debug_display1( 2, 201, 60 );
+static WLabel debug_display2( 2, 20,  60 );
+static WLabel debug_display3( 2, 201, 100 );
+static WLabel debug_display4( 2, 20,  100 );
 
 // The display also uses hardware SPI, plus #9 & #10
 #define TFT_CS 10
@@ -114,36 +117,64 @@ void loop()
 
     if (ctp.touched())
     {
-       TS_Point p = ctp.getPoint();
+       TS_Point p1 = ctp.getPoint();
+       delay( 10 );
+       TS_Point p2 = ctp.getPoint();
 
-       int x, y;
+       int16_t x1 = p1.x;
+       int16_t y1 = p1.y;
+       int16_t x2 = p2.x;
+       int16_t y2 = p2.y;
+       int16_t temp;
 
-       // map to the 180 degrees rotated display
-       x = map(p.y, 0, 320, 320, 0);
-       y = map(p.x, 0, 240, 0, 240);
+       // map to the display configuration
+       temp = map(y1, 0, 320, 320, 0);
+       y1   = map(x1, 0, 240, 0, 240);
+       x1   = temp;
 
-       // map back to the Adafruit display configuration
-       x = map(x, 0, 320, 320, 0);
-       y = map(y, 0, 240, 240, 0);
+       temp = map(y2, 0, 320, 320, 0);
+       y2   = map(x2, 0, 240, 0, 240);
+       x2   = temp;
 
 #ifdef ROTATE_DISPLAY
-       // Rotate back
-       x = map(x, 0, 320, 320, 0);
-       y = map(y, 0, 240, 240, 0);
+       // map back to the Adafruit FT6206 display configuration
+       x1 = map(x1, 0, 320, 320, 0);
+       y1 = map(y1, 0, 240, 240, 0);
+
+       x2 = map(x2, 0, 320, 320, 0);
+       y2 = map(y2, 0, 240, 240, 0);
 #endif
 
 #if 0
 WLabel::paint(F("x"),
-              x,
-              y,
+              x1,
+              y1,
+              ILI9341_WHITE,
+              ILI9341_GREEN,
+              10,
+              10);
+WLabel::paint(F("x"),
+              x2,
+              y2,
               ILI9341_RED,
               ILI9341_BLUE,
               10,
               10);
-debug_display.paint_four_digits( (uint16_t)ctp.readRegister8(0x03), ILI9341_BLACK, ILI9341_WHITE);
+static int16_t max_x = x1;
+static int16_t min_x = x1;
+static int16_t max_y = y1;
+static int16_t min_y = y1;
+if (x1 > max_x) max_x = x1;
+if (y1 > max_y) max_y = y1;
+if (x1 < min_x) min_x = x1;
+if (y1 < min_y) min_y = y1;
+debug_display1.paint_four_digits( min_x, ILI9341_BLACK, ILI9341_WHITE);
+debug_display2.paint_four_digits( max_x, ILI9341_BLACK, ILI9341_WHITE);
+debug_display3.paint_four_digits( min_y, ILI9341_BLACK, ILI9341_WHITE);
+debug_display4.paint_four_digits( max_y, ILI9341_BLACK, ILI9341_WHITE);
 #endif
 
-       debouncer.hit(x, y);
+       debouncer.hit(x1, y1, x2, y2);
     } else {
        debouncer.nohit();
     }

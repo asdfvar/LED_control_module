@@ -1,12 +1,38 @@
 
 #include "touch-debounce.h"
 
+#define ABS(A) ((A) > 0 ? (A) : -(A))
+
 void TouchDebounce::begin(void)
 {
     nohit();
 }
 
-void TouchDebounce::hit(uint16_t x, uint16_t y)
+void TouchDebounce::hit(int16_t x1, int16_t y1,
+                        int16_t x2, int16_t y2)
+{
+
+    if ( (ABS(x2 - x1) < 10) &&
+         (ABS(y2 - y1) < 10) )
+    {
+
+       int16_t x = (x1 + x2) / 2;
+       int16_t y = (y1 + y2) / 2;
+   
+       last_x   = x;
+       last_y   = y;
+       last_hit = true;
+   
+       if (index < MAX_INDEX)
+       {
+          accum_x[index] = (int16_t)x;
+          accum_y[index] = (int16_t)y;
+          index++;
+       }
+    }
+}
+
+void TouchDebounce::hit(int16_t x, int16_t y)
 {
     last_x   = x;
     last_y   = y;

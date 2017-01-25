@@ -9,7 +9,8 @@ class TouchDebounce
 {
    public:
        void begin( void );
-       void hit(uint16_t x, uint16_t y);
+       void hit(int16_t x, int16_t y);
+       void hit(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
        void nohit( void );
 
        bool touched( void );
@@ -23,7 +24,7 @@ class TouchDebounce
        int last_x;
        int last_y;
 
-       uint16_t index;
+       int16_t index;
        int16_t accum_x[MAX_INDEX], accum_y[MAX_INDEX];
 };
 
