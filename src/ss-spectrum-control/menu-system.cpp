@@ -31,39 +31,39 @@ WLabel down_slow(1, 260, 180, 2, 55);
 
 void MenuSystem::paintChangeControls(bool back) const
 {
-//    home_button.paint(F("HOME"), ILI9341_GREEN, DARK_COLOR);
-    up_slow.paint    (F("+"), ILI9341_GREEN, DARK_COLOR);
-    up_fast.paint    (F("+"), ILI9341_GREEN, DARK_COLOR);
-    down_slow.paint  (F("-"), ILI9341_GREEN, DARK_COLOR);
-    down_fast.paint  (F("-"), ILI9341_GREEN, DARK_COLOR);
+   //    home_button.paint(F("HOME"), ILI9341_GREEN, DARK_COLOR);
+   up_slow.paint    (F("+"), ILI9341_GREEN, DARK_COLOR);
+   up_fast.paint    (F("+"), ILI9341_GREEN, DARK_COLOR);
+   down_slow.paint  (F("-"), ILI9341_GREEN, DARK_COLOR);
+   down_fast.paint  (F("-"), ILI9341_GREEN, DARK_COLOR);
 
-    if (back) 
-       back_button.paint(F("BACK"), ILI9341_GREEN, DARK_COLOR);
-    else
-       save_button.paint(F("SAVE"), ILI9341_GREEN, DARK_COLOR);
+   if (back) 
+      back_button.paint(F("BACK"), ILI9341_GREEN, DARK_COLOR);
+   else
+      save_button.paint(F("SAVE"), ILI9341_GREEN, DARK_COLOR);
 }
 
 void MenuSystem::setMenu(WMenuBase& menu)
 {
-    previous = current;
-    current  = &menu;
-    tft.setTextSize(2);
-    tft.fillScreen(ILI9341_BLACK);
-    current->paint();
+   previous = current;
+   current  = &menu;
+   tft.setTextSize(2);
+   tft.fillScreen(ILI9341_BLACK);
+   current->paint();
 }
 
 void MenuSystem::prevMenu(void)
 {
-    WMenuBase *menu;
-    menu     = previous;
-    previous = current;
-    current  = menu;
-    tft.setTextSize(2);
-    tft.fillScreen(ILI9341_BLACK);
-    current->paint();
+   WMenuBase *menu;
+   menu     = previous;
+   previous = current;
+   current  = menu;
+   tft.setTextSize(2);
+   tft.fillScreen(ILI9341_BLACK);
+   current->paint();
 }
 
 bool MenuSystem::isMainMenu() const
 {
-    return (current == &main_menu);
+   return (current == &main_menu);
 }

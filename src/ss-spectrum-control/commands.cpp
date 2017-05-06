@@ -33,7 +33,7 @@ static bool session;
 
 static uint8_t pop_u8()
 {
-    return buf[offset++];
+   return buf[offset++];
 }
 
 
@@ -41,52 +41,52 @@ static uint8_t pop_u8()
 
 static void start_reply(uint8_t cmd)
 {
-    buf[0] = FRAME_START;
-    buf[2] = cmd;
-    pos = DATA_OFFSET;
+   buf[0] = FRAME_START;
+   buf[2] = cmd;
+   pos = DATA_OFFSET;
 }
 
 static void push_u8(uint8_t val)
 {
-    buf[pos++] = val;
+   buf[pos++] = val;
 }
 
 static void send_reply()
 {
-    buf[pos++] = FRAME_END;
-    buf[1] = pos;
-    Serial.write(buf, pos);
-    offset = pos = 0;
+   buf[pos++] = FRAME_END;
+   buf[1] = pos;
+   Serial.write(buf, pos);
+   offset = pos = 0;
 }
 
 
 static void send_nak()
 {
-    start_reply(CMD_NAK);
-    send_reply();
+   start_reply(CMD_NAK);
+   send_reply();
 }
 
 static void start_session_cmd()
 {
-    start_reply(CMD_VERSION);
-    push_u8(1);
-    send_reply();
+   start_reply(CMD_VERSION);
+   push_u8(1);
+   send_reply();
 }
 
 static void stop_session_cmd()
 {
-    session = 0;
-    start_reply(CMD_STOP);
-    send_reply();
+   session = 0;
+   start_reply(CMD_STOP);
+   send_reply();
 }
 
 static void dump_program_cmd()
 {
-    uint8_t prog = pop_u8();
+   uint8_t prog = pop_u8();
 
-    start_reply(CMD_DUMP_PROGRAM);
+   start_reply(CMD_DUMP_PROGRAM);
 
-    send_reply();
+   send_reply();
 }
 
 static void dump_calendar_cmd()
@@ -112,90 +112,90 @@ static void load_program_cmd()
 
 static void process_command()
 {
-    switch (buf[CMD_OFFSET]) {
-	case CMD_START: start_session_cmd(); return;
-	case CMD_DUMP_PROGRAM: dump_program_cmd(); return;
-	case CMD_DUMP_CALENDAR: dump_calendar_cmd(); return;
-	case CMD_ERASE_CALENDAR: erase_calendar_cmd(); return;
-	case CMD_ERASE_PROGRAM: erase_program_cmd(); return;
-	case CMD_LOAD_CALENDAR: load_calendar_cmd(); return;
-	case CMD_LOAD_PROGRAM: load_program_cmd(); return;
-	case CMD_STOP: stop_session_cmd(); return;
-	default:
-	   send_nak();
-	   break;
-    }
+   switch (buf[CMD_OFFSET]) {
+      case CMD_START: start_session_cmd(); return;
+      case CMD_DUMP_PROGRAM: dump_program_cmd(); return;
+      case CMD_DUMP_CALENDAR: dump_calendar_cmd(); return;
+      case CMD_ERASE_CALENDAR: erase_calendar_cmd(); return;
+      case CMD_ERASE_PROGRAM: erase_program_cmd(); return;
+      case CMD_LOAD_CALENDAR: load_calendar_cmd(); return;
+      case CMD_LOAD_PROGRAM: load_program_cmd(); return;
+      case CMD_STOP: stop_session_cmd(); return;
+      default:
+                     send_nak();
+                     break;
+   }
 }
 
 static bool valid_command()
 {
-    if (buf[0] != FRAME_START)
-	return false;
-    if (buf[1] > pos)
-	return false;
+   if (buf[0] != FRAME_START)
+      return false;
+   if (buf[1] > pos)
+      return false;
 
-    uint8_t len = buf[1];
-    if (buf[len - 1] != FRAME_END)
-	return false;
+   uint8_t len = buf[1];
+   if (buf[len - 1] != FRAME_END)
+      return false;
 
-    offset = 0;
-    return true;
+   offset = 0;
+   return true;
 }
 
 static bool __serial_poll()
 {
-    int r;
+   int r;
 
-    while (-1 != (r = Serial.read())) {
-	if ((pos == 0) && (r != FRAME_START))
-	    continue;
-	buf[pos++] = r;
-	if (valid_command())
-	    return true;
-	if (pos == COMMAND_MAX)
-	    pos = 0;
-    }
-    return false;
+   while (-1 != (r = Serial.read())) {
+      if ((pos == 0) && (r != FRAME_START))
+         continue;
+      buf[pos++] = r;
+      if (valid_command())
+         return true;
+      if (pos == COMMAND_MAX)
+         pos = 0;
+   }
+   return false;
 }
 
 #define TMO	(5 * 1000)
 
 static void serial_loop()
 {
-    long start = millis();
-    long n;
+   long start = millis();
+   long n;
 
-    session = 1;
-    menu.setMenu(serial_active_menu);
-    lp.stop();
+   session = 1;
+   menu.setMenu(serial_active_menu);
+   lp.stop();
 
-    do {
-	if (__serial_poll()) {
-	    process_command();
-	    start = millis(); 
-	}
-	n = millis();
-    } while (session && ((start + TMO) > n));
+   do {
+      if (__serial_poll()) {
+         process_command();
+         start = millis(); 
+      }
+      n = millis();
+   } while (session && ((start + TMO) > n));
 
-    lp.restart();
-    menu.setMenu(main_menu);
+   lp.restart();
+   menu.setMenu(main_menu);
 }
 
 void serial_poll()
 {
-    if (menu.isMainMenu()) {
-	if (__serial_poll()) {
-	    process_command();
-	    serial_loop();
-	}
-    } else {
-	pos = 0;
-	/* flush serial rx buffer:
-	 * if you tried to connect via the app, we don't want to see stale messages later..
-	 * TODO: maybe instead we should NAK so the app can tell the user we're busy?
-	 */
-	while (-1 != Serial.read())
-	    ;
-    }
+   if (menu.isMainMenu()) {
+      if (__serial_poll()) {
+         process_command();
+         serial_loop();
+      }
+   } else {
+      pos = 0;
+      /* flush serial rx buffer:
+       * if you tried to connect via the app, we don't want to see stale messages later..
+       * TODO: maybe instead we should NAK so the app can tell the user we're busy?
+       */
+      while (-1 != Serial.read())
+         ;
+   }
 }
 

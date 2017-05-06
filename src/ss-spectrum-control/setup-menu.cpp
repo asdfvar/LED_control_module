@@ -9,28 +9,28 @@ static const WLabel light_control_button( 14, 100, 190);
 
 void WSetupMenu::paint()
 {
-    program_list_button.paint(F("EDIT PROGRAMS"), ILI9341_GREEN, DARK_COLOR);
-    edit_time_button.paint(F("SET TIME"), ILI9341_GREEN, DARK_COLOR);
-    edit_cal_button.paint(F("SET CALENDAR"), ILI9341_GREEN, DARK_COLOR);
-    light_control_button.paint(F("LIGHT CONTROL"), ILI9341_GREEN, DARK_COLOR);
+   program_list_button.paint(F("EDIT PROGRAMS"), ILI9341_GREEN, DARK_COLOR);
+   edit_time_button.paint(F("SET TIME"), ILI9341_GREEN, DARK_COLOR);
+   edit_cal_button.paint(F("SET CALENDAR"), ILI9341_GREEN, DARK_COLOR);
+   light_control_button.paint(F("LIGHT CONTROL"), ILI9341_GREEN, DARK_COLOR);
 
-    back_button.paint(F("BACK"), ILI9341_GREEN, DARK_COLOR);
+   back_button.paint(F("BACK"), ILI9341_GREEN, DARK_COLOR);
 }
 
 void WSetupMenu::touch(uint16_t x, uint16_t y)
 {
-    if (program_list_button.hit(x, y))
-       menu.setMenu(program_list_menu);
-    if (edit_time_button.hit(x, y))
-       menu.setMenu(edit_current_time_menu);
-    if (edit_cal_button.hit(x, y))
-       menu.setMenu(edit_calendar_menu);
-    if (light_control_button.hit(x, y))
-       menu.setMenu(light_control_menu);
-    if (back_button.hit(x, y))
-    {
-       menu.setMenu(main_menu);
-//       menu.prevMenu();
-    }
+   if (program_list_button.hit(x, y))
+      menu.setMenu(program_list_menu);
+   if (edit_time_button.hit(x, y))
+      menu.setMenu(edit_current_time_menu);
+   if (edit_cal_button.hit(x, y))
+      menu.setMenu(edit_calendar_menu);
+   if (light_control_button.hit(x, y))
+      menu.setMenu(light_control_menu);
+   if (back_button.hit(x, y))
+   {
+      menu.setMenu(main_menu);
+      //       menu.prevMenu();
+   }
 }
 

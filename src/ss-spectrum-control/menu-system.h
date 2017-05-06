@@ -7,29 +7,29 @@
 class MenuSystem
 {
    public:
-       void setMenu(WMenuBase& menu);
-       void prevMenu(void);
-       void paintChangeControls(bool back=false) const;
-       bool isMainMenu() const;
-   
-       inline void begin(void)
-       {
-          setMenu(main_menu);
-       }
-   
-       inline void tick()
-       {
-          current->tick();
-       }
-   
-       inline void touch(uint16_t x, uint16_t y)
-       {
-          current->touch(x, y);
-       }
-   
+      void setMenu(WMenuBase& menu);
+      void prevMenu(void);
+      void paintChangeControls(bool back=false) const;
+      bool isMainMenu() const;
+
+      inline void begin(void)
+      {
+         setMenu(main_menu);
+      }
+
+      inline void tick()
+      {
+         current->tick();
+      }
+
+      inline void touch(uint16_t x, uint16_t y)
+      {
+         current->touch(x, y);
+      }
+
    private:
-       WMenuBase *current;
-       WMenuBase *previous;
+      WMenuBase *current;
+      WMenuBase *previous;
 };
 
 extern MenuSystem menu;

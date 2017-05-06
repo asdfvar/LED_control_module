@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 enum channels {
-    CH_RED,
-    CH_WHITE,
-    CH_BLUE
+   CH_RED,
+   CH_WHITE,
+   CH_BLUE
 };
 
 // current values

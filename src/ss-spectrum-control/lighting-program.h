@@ -9,203 +9,203 @@
 #define NPHASES			10 /* how many phases can be in the calendar */
 
 struct program_step {
-    uint8_t active:1;
-    uint8_t r:7;
-    uint8_t wh;
-    uint8_t b;
-    uint8_t hour;
-    uint8_t minute;
+   uint8_t active:1;
+   uint8_t r:7;
+   uint8_t wh;
+   uint8_t b;
+   uint8_t hour;
+   uint8_t minute;
 };
 
 struct program
 {
-    char name[PROGRAM_NAME_LEN + 1];
-    struct program_step steps[PROGRAM_STEPS];
+   char name[PROGRAM_NAME_LEN + 1];
+   struct program_step steps[PROGRAM_STEPS];
 };
 
 struct program_settings
 {
-    uint8_t fade_duration_minutes;
-    uint8_t active_program;
+   uint8_t fade_duration_minutes;
+   uint8_t active_program;
 };
 
 struct phase
 {
-    uint8_t active:1;
-    uint8_t program:7;
-    uint8_t days;
+   uint8_t active:1;
+   uint8_t program:7;
+   uint8_t days;
 };
 
 struct calendar
 {
-    uint32_t zeroDays;
-    struct   phase phases[NPHASES];
+   uint32_t zeroDays;
+   struct   phase phases[NPHASES];
 };
 
 struct lighting
 {
-    uint32_t light_level;
+   uint32_t light_level;
 };
 
 class LightingProgram
 {
-    public:
+   public:
 
-	// load program from eep; start running!
-	void begin();
+      // load program from eep; start running!
+      void begin();
 
-	// stop running program for now
-	void stop();
+      // stop running program for now
+      void stop();
 
-	// load active program from eeprom, restart execution
-	void restart();
+      // load active program from eeprom, restart execution
+      void restart();
 
-	// once every second, tick tock, tick tock.
-	void tick();
+      // once every second, tick tock, tick tock.
+      void tick();
 
-	// load program from EEPROM: should only be done when not running
-	void loadProgram(uint8_t index);
+      // load program from EEPROM: should only be done when not running
+      void loadProgram(uint8_t index);
 
-	// loaded program to defaults
-	void resetProgram(bool initial=false);
-	
-	// flush loaded program out to EEPROM
-	void saveProgram();
+      // loaded program to defaults
+      void resetProgram(bool initial=false);
 
-	// save calendar to the EEPROM
-	void saveCalendar();
+      // flush loaded program out to EEPROM
+      void saveProgram();
 
-        // save lighting control parameters to the EEPROM
-        void saveLightControl();
+      // save calendar to the EEPROM
+      void saveCalendar();
 
-        // load light control level
-        uint16_t loadLightControlNew( void );
+      // save lighting control parameters to the EEPROM
+      void saveLightControl();
 
-        // save lighting control parameters to the EEPROM
-        void saveLightControlNew( uint16_t );
+      // load light control level
+      uint16_t loadLightControlNew( void );
 
-	// edit active program index
-	inline uint8_t getActiveProgram() const { return settings.active_program; }
-	void setActiveProgram(uint8_t index);
+      // save lighting control parameters to the EEPROM
+      void saveLightControlNew( uint16_t );
 
-	// edit fade duration
-	inline uint8_t getFadeDuration() const { return settings.fade_duration_minutes; }
-	void setFadeDuration(uint8_t minutes);
+      // edit active program index
+      inline uint8_t getActiveProgram() const { return settings.active_program; }
+      void setActiveProgram(uint8_t index);
 
-	// start editing a step
-	struct program_step *startEditing(uint8_t step, uint8_t *minH, uint8_t *minM);
+      // edit fade duration
+      inline uint8_t getFadeDuration() const { return settings.fade_duration_minutes; }
+      void setFadeDuration(uint8_t minutes);
 
-	// get a phase, yo
-	struct phase *getPhase(uint8_t phase) {
-	    return cal.phases + phase;
-	}
+      // start editing a step
+      struct program_step *startEditing(uint8_t step, uint8_t *minH, uint8_t *minM);
 
-	// finish editing this step.
-	// this updates all steps to conform to fade duration limitations
-	inline void endEditing(uint8_t step) {
-	    recalculate(step);
-	}
+      // get a phase, yo
+      struct phase *getPhase(uint8_t phase) {
+         return cal.phases + phase;
+      }
 
-	// can this step be activated?
-	bool step_time_overflows(const struct program_step *step) const;
+      // finish editing this step.
+      // this updates all steps to conform to fade duration limitations
+      inline void endEditing(uint8_t step) {
+         recalculate(step);
+      }
 
-	// currently loaded program
-	inline uint8_t getLoadedProgram() const {
-	    return loaded_program;
-	}
+      // can this step be activated?
+      bool step_time_overflows(const struct program_step *step) const;
 
-	inline const char *getLoadedProgramName() const {
-	    return program.name;
-	}
+      // currently loaded program
+      inline uint8_t getLoadedProgram() const {
+         return loaded_program;
+      }
 
-	inline void setLoadedProgramName(const char *name) {
-	    strncpy(program.name, name, PROGRAM_NAME_LEN + 1);
-	}
+      inline const char *getLoadedProgramName() const {
+         return program.name;
+      }
 
-	inline const char *getProgramName(int pindex) {
-	    loadProgram(pindex);
-	    return getLoadedProgramName();
-	}
+      inline void setLoadedProgramName(const char *name) {
+         strncpy(program.name, name, PROGRAM_NAME_LEN + 1);
+      }
 
-	inline const struct program_step *getStepAt(uint8_t step) const {
-	    return program.steps + step;
-	}
+      inline const char *getProgramName(int pindex) {
+         loadProgram(pindex);
+         return getLoadedProgramName();
+      }
 
-	// if there are any intermediate steps enabled, this is an advanced program.
-	inline bool isAdvancedProgram(void) const {
-	    for (int i = 1; i < (PROGRAM_STEPS - 1); i++)
-		if (program.steps[i].active)
-		    return true;
-	    return false;
-	}
+      inline const struct program_step *getStepAt(uint8_t step) const {
+         return program.steps + step;
+      }
 
-	/* assign a given program to a phase */
-	inline void setPhaseProgram(uint8_t phase, uint8_t program) {
-	    cal.phases[phase].program = program;
-	}
+      // if there are any intermediate steps enabled, this is an advanced program.
+      inline bool isAdvancedProgram(void) const {
+         for (int i = 1; i < (PROGRAM_STEPS - 1); i++)
+            if (program.steps[i].active)
+               return true;
+         return false;
+      }
 
-	/* set our position in the cycle */
-	void setCycleTime(uint8_t weeks, uint8_t days);
+      /* assign a given program to a phase */
+      inline void setPhaseProgram(uint8_t phase, uint8_t program) {
+         cal.phases[phase].program = program;
+      }
 
-	/* where are we in the current cycle? */
-	bool getCycleTime(uint32_t& days) const;
-	bool getCycleTime(uint8_t& weeks, uint8_t& days) const;
+      /* set our position in the cycle */
+      void setCycleTime(uint8_t weeks, uint8_t days);
 
-	// some time manipulation bits
-	static uint16_t to_minutes(const struct program_step *s);
-	static void from_minutes(struct program_step *s, uint16_t m);
-	static void from_minutes(uint8_t *hours, uint8_t *minutes, uint16_t m);
+      /* where are we in the current cycle? */
+      bool getCycleTime(uint32_t& days) const;
+      bool getCycleTime(uint8_t& weeks, uint8_t& days) const;
 
-	// is this step off?
-	static bool is_off(const struct program_step *s) {
-	    return !(s->wh || s->r || s->b);
-	}
+      // some time manipulation bits
+      static uint16_t to_minutes(const struct program_step *s);
+      static void from_minutes(struct program_step *s, uint16_t m);
+      static void from_minutes(uint8_t *hours, uint8_t *minutes, uint16_t m);
 
-    private:
-	bool calendar_enabled;
-	uint8_t current_step;
-	uint8_t current_phase;
-	struct calendar cal;              // growing phases calendar
-        struct lighting light;
-	struct program_settings settings; // settings stored in eeprom
-	uint8_t loaded_program;           // index of program loaded into 'program'
+      // is this step off?
+      static bool is_off(const struct program_step *s) {
+         return !(s->wh || s->r || s->b);
+      }
 
-	float color_delta[3]; // delta to add to current
-	float color_value[3]; // current, unrounded value for smoothing
-	uint16_t time_delta; // how much time between each command (seconds)
-	uint8_t fade_steps_left; // 0-10, where are we in the fade
+   private:
+      bool calendar_enabled;
+      uint8_t current_step;
+      uint8_t current_phase;
+      struct calendar cal;              // growing phases calendar
+      struct lighting light;
+      struct program_settings settings; // settings stored in eeprom
+      uint8_t loaded_program;           // index of program loaded into 'program'
 
-	long lasttime; // timestamp, last poll. for fade.
-	bool enabled; // should we be running the program?
+      float color_delta[3]; // delta to add to current
+      float color_value[3]; // current, unrounded value for smoothing
+      uint16_t time_delta; // how much time between each command (seconds)
+      uint8_t fade_steps_left; // 0-10, where are we in the fade
 
-	struct program program;
-	void loadSettings();
-	void saveSettings();
-        void loadCalendar();
-        void loadLightControl();
-	void sort(void);
-	uint8_t find(const DateTime& now);
-	void forceStep();
-	long delta_t();
-	void run_step();
+      long lasttime; // timestamp, last poll. for fade.
+      bool enabled; // should we be running the program?
 
-	void initialVeg();
-	void initialBloom();
+      struct program program;
+      void loadSettings();
+      void saveSettings();
+      void loadCalendar();
+      void loadLightControl();
+      void sort(void);
+      uint8_t find(const DateTime& now);
+      void forceStep();
+      long delta_t();
+      void run_step();
 
-	// eeprom address for a given program
-	uint16_t offsetOfProgram(uint8_t index) const;
+      void initialVeg();
+      void initialBloom();
 
-	// helper for recalculate(): handle a single step
-	void recalculate_step(uint8_t step);
+      // eeprom address for a given program
+      uint16_t offsetOfProgram(uint8_t index) const;
 
-	// recalculate timing information if fade duration has changed
-	void recalculate(uint8_t step);
+      // helper for recalculate(): handle a single step
+      void recalculate_step(uint8_t step);
 
-	// walk backwards from (s - 1) returning the first valid step
-	uint8_t valid_step_before(uint8_t s);
+      // recalculate timing information if fade duration has changed
+      void recalculate(uint8_t step);
 
-	// figure out what active phase we are in (if any)
-	bool findActivePhase(uint8_t &phase);
+      // walk backwards from (s - 1) returning the first valid step
+      uint8_t valid_step_before(uint8_t s);
+
+      // figure out what active phase we are in (if any)
+      bool findActivePhase(uint8_t &phase);
 
 };
 extern LightingProgram lp;

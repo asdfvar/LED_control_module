@@ -33,68 +33,68 @@ static uint16_t repeat_programmed_off_seconds;
 
 static bool channels_are_all_off(void)
 {
-    if ((channels[0] == 0) && (channels[1] == 0) && (channels[2] == 0))
-	return true;
-    return false;
+   if ((channels[0] == 0) && (channels[1] == 0) && (channels[2] == 0))
+      return true;
+   return false;
 }
 
 static void raw_send_update()
 {
-    Lights.print (output);
-    after_time = millis() + repeat_delay;
+   Lights.print (output);
+   after_time = millis() + repeat_delay;
 }
 
 static void sendUpdate(uint16_t repeat_programmed_off)
 {
-    if (!last_valid || memcmp(last_channels, channels, 3)) {
-	snprintf(output, sizeof(output), "ABC..NextLevel:%d:%d:%d:00\r\n",
-		channels[CH_RED], channels[CH_WHITE], channels[CH_BLUE]);
+   if (!last_valid || memcmp(last_channels, channels, 3)) {
+      snprintf(output, sizeof(output), "ABC..NextLevel:%d:%d:%d:00\r\n",
+            channels[CH_RED], channels[CH_WHITE], channels[CH_BLUE]);
 
-	memcpy(last_channels, channels, 3);
-	raw_send_update();
-	last_valid = true;
-	repeat_programmed_off_seconds = 0;
-	if (channels_are_all_off())
-	    repeat_programmed_off_seconds = repeat_programmed_off;
-    }
+      memcpy(last_channels, channels, 3);
+      raw_send_update();
+      last_valid = true;
+      repeat_programmed_off_seconds = 0;
+      if (channels_are_all_off())
+         repeat_programmed_off_seconds = repeat_programmed_off;
+   }
 }
 
 void sendManualUpdate()
 {
-    sendUpdate(0);
+   sendUpdate(0);
 }
 
 void sendProgrammedUpdate()
 {
-    sendUpdate(ALL_OFF_REPEAT_DURATION_SECONDS);
+   sendUpdate(ALL_OFF_REPEAT_DURATION_SECONDS);
 }
 
 void repeatedUpdatePoll()
 {
-    if (after_time)
-    {
-	if (millis() > after_time)
-	{
-	    Lights.print (output);
-	    after_time = 0;
-	}
-    }
+   if (after_time)
+   {
+      if (millis() > after_time)
+      {
+         Lights.print (output);
+         after_time = 0;
+      }
+   }
 }
 
 void serialCommTick()
 {
-    if (repeat_programmed_off_seconds)
-    {
-	--repeat_programmed_off_seconds;
-	if (repeat_programmed_off_seconds == 0)
-	{
-	    raw_send_update();
-	    repeat_programmed_off_seconds = ALL_OFF_REPEAT_DURATION_SECONDS;
-	}
-    }
+   if (repeat_programmed_off_seconds)
+   {
+      --repeat_programmed_off_seconds;
+      if (repeat_programmed_off_seconds == 0)
+      {
+         raw_send_update();
+         repeat_programmed_off_seconds = ALL_OFF_REPEAT_DURATION_SECONDS;
+      }
+   }
 }
 
 void initSerialComms()
 {
-    Lights.begin(1200);
+   Lights.begin(1200);
 }
