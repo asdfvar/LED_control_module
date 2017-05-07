@@ -37,9 +37,11 @@ void WMainMenu::tick()
    weeks += 1;
    days  += 1;
 
-   if (last_enabled != cal_enabled) {
+   if (last_enabled != cal_enabled)
+   {
       last_enabled = cal_enabled;
-      if (cal_enabled) {
+      if ( cal_enabled )
+      {
          last_week = last_day = 0xff;
       } else {
          cycle_week.paint(F("--"), ILI9341_GREEN, ILI9341_BLACK);

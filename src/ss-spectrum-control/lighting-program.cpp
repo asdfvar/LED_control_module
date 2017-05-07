@@ -422,6 +422,9 @@ void LightingProgram::begin()
       Serial.println(EEPROM.length());
    }
 
+   last_AL_update_time = now.secondstime();
+   AL_intensity = 0;
+
    loadCalendar();
    loadLightControl();
    loadSettings();
@@ -456,17 +459,6 @@ long LightingProgram::delta_t()
    return delta;
 }
 
-
-
-
-
-
-
-
-
-
-
-
 static float color_step(uint8_t from, uint8_t to)
 {
    float f = from;
@@ -488,6 +480,18 @@ void LightingProgram::run_step()
    channels[CH_BLUE] = roundf(color_value[CH_BLUE]); 
 
    sendProgrammedUpdate();
+}
+
+uint16_t LightingProgram::read_NL_intensity( void )
+{
+   // code for reading in natural light level here between 0->99
+   // return natural light level
+   return (uint16_t)(last_AL_update_time % 100);
+}
+
+uint16_t LightingProgram::get_AL_intensity( void )
+{
+   return AL_intensity;
 }
 
 void LightingProgram::tick()
@@ -528,10 +532,12 @@ void LightingProgram::tick()
          color_value[CH_BLUE] = channels[CH_BLUE];
          run_step();
       }
-   } else if (fade_steps_left) {
+   } else if (fade_steps_left)
+   {
       long dt = delta_t();
 
-      if (dt >= time_delta) {
+      if (dt >= time_delta)
+      {
          if (fade_steps_left == 1) {
             forceStep();
             fade_steps_left = 0;
@@ -539,5 +545,24 @@ void LightingProgram::tick()
             run_step();
          }
       }
+   }
+
+   // update required artificial light-level information
+#define WAIT_TIME 5
+   if ( now.secondstime() >= last_AL_update_time + WAIT_TIME )
+   {
+      last_AL_update_time = now.secondstime();
+
+      uint16_t desired_intensity = loadLightControlNew();
+      uint16_t NL_intensity      = read_NL_intensity(); 
+
+      if ( desired_intensity > NL_intensity && NL_intensity > 0)
+      {
+         AL_intensity = desired_intensity - NL_intensity;
+      } else {
+         AL_intensity = 0;
+      }
+
+      // code for sending out AL_intensity to device
    }
 }

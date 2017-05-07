@@ -7,7 +7,7 @@
 #include "menu-system.h"
 #include "touch-debounce.h"
 
-#define ROTATE_DISPLAY
+//#define ROTATE_DISPLAY
 
 static WLabel debug_display1( 2, 201, 60  );
 static WLabel debug_display2( 2, 20,  60  );
@@ -111,12 +111,21 @@ void setup(void)
 void loop()
 {
    update_now();
-   if (now.second() != last_second)
+   if ( now.second() != last_second )
    {
       last_second = now.second();
       lp.tick();
       menu.tick();
       serialCommTick();
+#if 0
+      WLabel::paint(F("x"),
+            100,
+            100,
+            ILI9341_BLUE,
+            ILI9341_GREEN,
+            10,
+            10);
+#endif
    }
 
    if (ctp.touched())

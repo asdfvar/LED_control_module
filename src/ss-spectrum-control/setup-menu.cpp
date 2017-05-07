@@ -2,10 +2,10 @@
 #include "lighting-program.h"
 #include "menu-system.h"
 
-static const WLabel program_list_button(  14, 100,  10);
-static const WLabel edit_time_button(     14, 100,  70);
-static const WLabel edit_cal_button(      14, 100, 130);
-static const WLabel light_control_button( 14, 100, 190);
+static const WLabel program_list_button(  14, 100,  10 );
+static const WLabel edit_time_button(     14, 100,  70 );
+static const WLabel edit_cal_button(      14, 100, 130 );
+static const WLabel light_control_button( 14, 100, 190 );
 
 void WSetupMenu::paint()
 {

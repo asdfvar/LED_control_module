@@ -161,6 +161,10 @@ class LightingProgram
          return !(s->wh || s->r || s->b);
       }
 
+      // Artificial and Natural light intensity readings and manipulation
+      uint16_t read_NL_intensity( void );
+      uint16_t get_AL_intensity( void );
+
    private:
       bool calendar_enabled;
       uint8_t current_step;
@@ -192,6 +196,9 @@ class LightingProgram
       void initialVeg();
       void initialBloom();
 
+      long last_AL_update_time;
+      uint16_t AL_intensity;
+
       // eeprom address for a given program
       uint16_t offsetOfProgram(uint8_t index) const;
 
@@ -208,6 +215,7 @@ class LightingProgram
       bool findActivePhase(uint8_t &phase);
 
 };
+
 extern LightingProgram lp;
 extern DateTime now;
 extern RTC_DS3231 rtc;

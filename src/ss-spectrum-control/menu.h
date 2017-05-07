@@ -218,6 +218,7 @@ extern WEditCalendar edit_calendar_menu;
 class WLightControl : public WMenuBase {
    virtual void paint();
    virtual void touch(uint16_t x, uint16_t y);
+   virtual void tick();
 };
 
 extern WLightControl light_control_menu;

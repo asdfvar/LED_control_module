@@ -14,7 +14,7 @@ class MenuSystem
 
       inline void begin(void)
       {
-         setMenu(main_menu);
+         setMenu( main_menu );
       }
 
       inline void tick()
