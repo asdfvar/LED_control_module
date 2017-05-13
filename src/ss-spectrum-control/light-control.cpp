@@ -17,7 +17,7 @@ void WLightControl::paint()
    WLabel::paint(      F("AL INTENSITY"      ),  100, 110, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
    clear_button.paint( F("RESET"),      ILI9341_RED, DARK_COLOR);
 
-   desired_intensity = lp.loadLightControlNew();
+   desired_intensity = lp.getDesiredIntensity();
    CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE);
 
    common_proc();
@@ -38,12 +38,14 @@ void WLightControl::touch(uint16_t x, uint16_t y)
       // reset the intensity level to zero
       desired_intensity = 0;
       CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControlNew( desired_intensity );
    }
    else if ( up_slow.hit(x, y) )
    {
       // increment by 1
       if ( desired_intensity < 99 ) desired_intensity++;
       CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControlNew( desired_intensity );
    }
    else if ( up_fast.hit(x, y) )
    {
@@ -51,6 +53,7 @@ void WLightControl::touch(uint16_t x, uint16_t y)
       if ( desired_intensity < 89 ) desired_intensity += 10;
       else                  desired_intensity  = 99;
       CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControlNew( desired_intensity );
    }
    else if ( down_fast.hit(x, y) )
    {
@@ -58,12 +61,14 @@ void WLightControl::touch(uint16_t x, uint16_t y)
       if ( desired_intensity > 9 ) desired_intensity -= 10;
       else                 desired_intensity  = 0;
       CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControlNew( desired_intensity );
    }
    else if ( down_slow.hit(x, y) )
    {
       // decrement by 1. Min of 0
       if ( desired_intensity > 0 ) desired_intensity--;
       CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControlNew( desired_intensity );
    }
 }
 

@@ -164,6 +164,7 @@ class LightingProgram
       // Artificial and Natural light intensity readings and manipulation
       uint16_t read_NL_intensity( void );
       uint16_t get_AL_intensity( void );
+      uint16_t getDesiredIntensity( void );
 
    private:
       bool calendar_enabled;
@@ -197,7 +198,9 @@ class LightingProgram
       void initialBloom();
 
       long last_AL_update_time;
-      uint16_t AL_intensity;
+      uint16_t AL_intensity; // artificial light-level intensity
+      uint16_t NL_intensity; // natural light-level intensity
+      uint16_t desired_intensity; // desired light-level intensity
 
       // eeprom address for a given program
       uint16_t offsetOfProgram(uint8_t index) const;

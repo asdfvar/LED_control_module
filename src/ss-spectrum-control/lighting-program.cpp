@@ -155,6 +155,7 @@ static bool loadEEPBytes(uint16_t offset, void *ptr, size_t len)
 
    if (calc == crc) 
       return true;
+
    return false;
 }
 
@@ -200,6 +201,12 @@ void LightingProgram::saveLightControl()
 void LightingProgram::saveLightControlNew( uint16_t light_level)
 {
    saveEEPBytes(NEW_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
+   desired_intensity = light_level;
+}
+
+uint16_t LightingProgram::getDesiredIntensity( void )
+{
+   return desired_intensity;
 }
 
 void LightingProgram::loadLightControl()
@@ -218,6 +225,7 @@ uint16_t LightingProgram::loadLightControlNew( void )
       light_level = 0;
    }
 
+   desired_intensity = light_level;
    return light_level;
 }
 
@@ -426,7 +434,7 @@ void LightingProgram::begin()
    AL_intensity = 0;
 
    loadCalendar();
-   loadLightControl();
+   loadLightControlNew();
    loadSettings();
    restart();
 }
@@ -553,7 +561,6 @@ void LightingProgram::tick()
    {
       last_AL_update_time = now.secondstime();
 
-      uint16_t desired_intensity = loadLightControlNew();
       uint16_t NL_intensity      = read_NL_intensity(); 
 
       if ( desired_intensity > NL_intensity && NL_intensity > 0)
