@@ -18,7 +18,7 @@ void WLightControl::paint()
    clear_button.paint( F("RESET"),      ILI9341_RED, DARK_COLOR);
 
    desired_intensity = lp.getDesiredIntensity();
-   CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE);
+   CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE);
 
    common_proc();
 
@@ -29,7 +29,7 @@ void WLightControl::touch(uint16_t x, uint16_t y)
 {
    if ( save_button.hit(x, y) )
    {
-      lp.saveLightControlNew( desired_intensity );
+      lp.saveLightControl( desired_intensity );
       lp.restart();
       menu.setMenu( setup_menu );
    } 
@@ -37,38 +37,38 @@ void WLightControl::touch(uint16_t x, uint16_t y)
    {
       // reset the intensity level to zero
       desired_intensity = 0;
-      CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
-      lp.saveLightControlNew( desired_intensity );
+      CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControl( desired_intensity );
    }
    else if ( up_slow.hit(x, y) )
    {
       // increment by 1
       if ( desired_intensity < 99 ) desired_intensity++;
-      CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
-      lp.saveLightControlNew( desired_intensity );
+      CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControl( desired_intensity );
    }
    else if ( up_fast.hit(x, y) )
    {
       // increment by 10. Max of 99
       if ( desired_intensity < 89 ) desired_intensity += 10;
       else                  desired_intensity  = 99;
-      CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
-      lp.saveLightControlNew( desired_intensity );
+      CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControl( desired_intensity );
    }
    else if ( down_fast.hit(x, y) )
    {
       // decrement by 10. Min of 0
       if ( desired_intensity > 9 ) desired_intensity -= 10;
       else                 desired_intensity  = 0;
-      CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
-      lp.saveLightControlNew( desired_intensity );
+      CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControl( desired_intensity );
    }
    else if ( down_slow.hit(x, y) )
    {
       // decrement by 1. Min of 0
       if ( desired_intensity > 0 ) desired_intensity--;
-      CR_intensity.paint_four_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
-      lp.saveLightControlNew( desired_intensity );
+      CR_intensity.paint_two_digits( desired_intensity, ILI9341_BLACK, ILI9341_WHITE );
+      lp.saveLightControl( desired_intensity );
    }
 }
 
@@ -80,12 +80,12 @@ void WLightControl::tick( void )
 static void common_proc( void )
 {
    uint16_t NL_intensity = lp.read_NL_intensity();
-   NL_intensity_label.paint_four_digits( NL_intensity,
-                                         ILI9341_BLACK,
-                                         ILI9341_WHITE );
+   NL_intensity_label.paint_two_digits( NL_intensity,
+                                        ILI9341_BLACK,
+                                        ILI9341_WHITE );
 
    uint16_t AL_intensity = lp.get_AL_intensity();
-   AL_intensity_label.paint_four_digits( AL_intensity,
-                                         ILI9341_BLACK,
-                                         ILI9341_WHITE );
+   AL_intensity_label.paint_two_digits( AL_intensity,
+                                        ILI9341_BLACK,
+                                        ILI9341_WHITE );
 }

@@ -11,8 +11,7 @@
 
 #define SETTINGS_OFFSET      (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
 #define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
-#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof(struct lighting))
-#define NEW_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t ))
+#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof( uint16_t ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -193,14 +192,9 @@ void LightingProgram::saveCalendar()
    saveEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal));
 }
 
-void LightingProgram::saveLightControl()
+void LightingProgram::saveLightControl( uint16_t light_level )
 {
-   saveEEPBytes(LIGHT_CONTROL_OFFSET, &light, sizeof(light));
-}
-
-void LightingProgram::saveLightControlNew( uint16_t light_level)
-{
-   saveEEPBytes(NEW_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
+   saveEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
    desired_intensity = light_level;
 }
 
@@ -209,18 +203,10 @@ uint16_t LightingProgram::getDesiredIntensity( void )
    return desired_intensity;
 }
 
-void LightingProgram::loadLightControl()
-{
-   if (!loadEEPBytes(LIGHT_CONTROL_OFFSET, &light, sizeof(light)))
-   {
-      memset(&light, 0, sizeof(light));
-   }
-}
-
-uint16_t LightingProgram::loadLightControlNew( void )
+uint16_t LightingProgram::loadLightControl( void )
 {
    uint16_t light_level = 0;
-   if (!loadEEPBytes(NEW_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
+   if (!loadEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
    {
       light_level = 0;
    }
@@ -434,7 +420,7 @@ void LightingProgram::begin()
    AL_intensity = 0;
 
    loadCalendar();
-   loadLightControlNew();
+   loadLightControl();
    loadSettings();
    restart();
 }

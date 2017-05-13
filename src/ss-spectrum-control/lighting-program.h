@@ -42,11 +42,6 @@ struct calendar
    struct   phase phases[NPHASES];
 };
 
-struct lighting
-{
-   uint32_t light_level;
-};
-
 class LightingProgram
 {
    public:
@@ -76,13 +71,7 @@ class LightingProgram
       void saveCalendar();
 
       // save lighting control parameters to the EEPROM
-      void saveLightControl();
-
-      // load light control level
-      uint16_t loadLightControlNew( void );
-
-      // save lighting control parameters to the EEPROM
-      void saveLightControlNew( uint16_t );
+      void saveLightControl( uint16_t light_level );
 
       // edit active program index
       inline uint8_t getActiveProgram() const { return settings.active_program; }
@@ -171,7 +160,6 @@ class LightingProgram
       uint8_t current_step;
       uint8_t current_phase;
       struct calendar cal;              // growing phases calendar
-      struct lighting light;
       struct program_settings settings; // settings stored in eeprom
       uint8_t loaded_program;           // index of program loaded into 'program'
 
@@ -187,7 +175,7 @@ class LightingProgram
       void loadSettings();
       void saveSettings();
       void loadCalendar();
-      void loadLightControl();
+      uint16_t loadLightControl( void );
       void sort(void);
       uint8_t find(const DateTime& now);
       void forceStep();
