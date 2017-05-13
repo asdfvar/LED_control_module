@@ -79,7 +79,7 @@ void WLightControl::tick( void )
 
 static void common_proc( void )
 {
-   uint16_t NL_intensity = lp.read_NL_intensity();
+   uint16_t NL_intensity = lp.get_NL_intensity();
    NL_intensity_label.paint_two_digits( NL_intensity,
                                         ILI9341_BLACK,
                                         ILI9341_WHITE );

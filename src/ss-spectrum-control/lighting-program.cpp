@@ -203,7 +203,7 @@ uint16_t LightingProgram::getDesiredIntensity( void )
    return desired_intensity;
 }
 
-uint16_t LightingProgram::loadLightControl( void )
+uint16_t LightingProgram::loadLightControlSettings( void )
 {
    uint16_t light_level = 0;
    if (!loadEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
@@ -212,6 +212,15 @@ uint16_t LightingProgram::loadLightControl( void )
    }
 
    desired_intensity = light_level;
+   read_NL_intensity();
+
+   if ( desired_intensity > NL_intensity && NL_intensity > 0)
+   {
+      AL_intensity = desired_intensity - NL_intensity;
+   } else {
+      AL_intensity = 0;
+   }
+
    return light_level;
 }
 
@@ -417,10 +426,9 @@ void LightingProgram::begin()
    }
 
    last_AL_update_time = now.secondstime();
-   AL_intensity = 0;
 
    loadCalendar();
-   loadLightControl();
+   loadLightControlSettings();
    loadSettings();
    restart();
 }
@@ -476,11 +484,19 @@ void LightingProgram::run_step()
    sendProgrammedUpdate();
 }
 
-uint16_t LightingProgram::read_NL_intensity( void )
+// read and return natural light level reading
+void LightingProgram::read_NL_intensity( void )
 {
    // code for reading in natural light level here between 0->99
-   // return natural light level
-   return (uint16_t)(last_AL_update_time % 100);
+
+   // begin temporary testing values
+   NL_intensity = (uint16_t)(last_AL_update_time % 100);
+   // end temporary testing values
+}
+
+uint16_t LightingProgram::get_NL_intensity( void )
+{
+   return NL_intensity;
 }
 
 uint16_t LightingProgram::get_AL_intensity( void )
@@ -542,12 +558,12 @@ void LightingProgram::tick()
    }
 
    // update required artificial light-level information
-#define WAIT_TIME 5
-   if ( now.secondstime() >= last_AL_update_time + WAIT_TIME )
+   if ( now.secondstime() >= last_AL_update_time + 5 )
    {
       last_AL_update_time = now.secondstime();
 
-      uint16_t NL_intensity      = read_NL_intensity(); 
+      // read the natural light-level intensity
+      read_NL_intensity(); 
 
       if ( desired_intensity > NL_intensity && NL_intensity > 0)
       {

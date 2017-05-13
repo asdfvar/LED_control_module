@@ -151,7 +151,8 @@ class LightingProgram
       }
 
       // Artificial and Natural light intensity readings and manipulation
-      uint16_t read_NL_intensity( void );
+      void     read_NL_intensity( void );
+      uint16_t get_NL_intensity( void );
       uint16_t get_AL_intensity( void );
       uint16_t getDesiredIntensity( void );
 
@@ -175,7 +176,7 @@ class LightingProgram
       void loadSettings();
       void saveSettings();
       void loadCalendar();
-      uint16_t loadLightControl( void );
+      uint16_t loadLightControlSettings( void );
       void sort(void);
       uint8_t find(const DateTime& now);
       void forceStep();
