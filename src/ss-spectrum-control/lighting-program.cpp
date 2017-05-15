@@ -5,6 +5,8 @@
 #include "EEPROM.h"
 #include "crc32.h"
 
+#define HWSERIAL Serial1
+
 /* eeprom offsets */
 #define EEPROM_SIZE      0x800
 #define CRC_LENGTH       4
@@ -487,7 +489,21 @@ void LightingProgram::run_step()
 // read and return natural light level reading
 void LightingProgram::read_NL_intensity( void )
 {
-   // code for reading in natural light level here between 0->99
+
+  // code for reading in natural light level here between 0->99
+  String content = "";
+ 
+  // TODO: check if that ';' is meant to be inside the string
+  // Format: "LightLevel:XY;"
+  while(HWSERIAL.available())
+  {
+     char character = HWSERIAL.read();
+     content.concat(character);
+  }
+ 
+  if (content != "") {
+    Serial.println(content);
+  }
 
    // begin temporary testing values
    NL_intensity = (uint16_t)(last_AL_update_time % 100);

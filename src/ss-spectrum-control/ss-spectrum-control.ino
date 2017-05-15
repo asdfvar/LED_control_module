@@ -117,15 +117,6 @@ void loop()
       lp.tick();
       menu.tick();
       serialCommTick();
-#if 0
-      WLabel::paint(F("x"),
-            100,
-            100,
-            ILI9341_BLUE,
-            ILI9341_GREEN,
-            10,
-            10);
-#endif
    }
 
    if (ctp.touched())
