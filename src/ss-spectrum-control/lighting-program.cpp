@@ -11,9 +11,9 @@
 #define EEPROM_SIZE      0x800
 #define CRC_LENGTH       4
 
-#define SETTINGS_OFFSET      (EEPROM_SIZE - CRC_LENGTH - sizeof(struct program_settings))
-#define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof(struct calendar))
-#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof( uint16_t ))
+#define SETTINGS_OFFSET      (EEPROM_SIZE     - CRC_LENGTH - sizeof( struct program_settings ))
+#define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof( struct calendar         ))
+#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof( uint16_t                ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -23,9 +23,14 @@ uint16_t LightingProgram::to_minutes(const struct program_step *s)
 void LightingProgram::from_minutes(uint8_t *hours, uint8_t *minutes, uint16_t m)
 {
    if (m >= 1440)
+   {
       m = 1439;
+   }
+
    *hours = 0;
-   while (m >= 60) {
+
+   while (m >= 60)
+   {
       ++(*hours);
       m -= 60;
    }
@@ -40,15 +45,20 @@ void LightingProgram::from_minutes(struct program_step *s, uint16_t m)
 static bool time_before(const struct program_step *s, uint8_t h, uint8_t m)
 {
    if (h == s->hour)
+   {
       return (m < s->minute);
+   }
    return (h < s->hour);
 }
 
 uint8_t LightingProgram::valid_step_before(uint8_t s)
 {
-   for (int i = s - 1; i >= 0; i--) {
+   for (int i = s - 1; i >= 0; i--)
+   {
       if (program.steps[i].active)
+      {
          return i;
+      }
    }
    return 0; /* step 0 is always active! */
 }
@@ -59,18 +69,25 @@ uint8_t LightingProgram::find(const DateTime& now)
    uint8_t m = now.minute();
 
    // check for fade == 0, off == on, basic program, always use on time/color.
-   if ((getFadeDuration() == 0) && (!isAdvancedProgram())) {
+   if ((getFadeDuration() == 0) && (!isAdvancedProgram()))
+   {
       if ((program.steps[0].hour == program.steps[PROGRAM_STEPS - 1].hour) &&
             (program.steps[0].minute == program.steps[PROGRAM_STEPS - 1].minute))
+      {
          return 0;
+      }
    }
 
-   for (int i = 0; i < PROGRAM_STEPS; i++) {
+   for (int i = 0; i < PROGRAM_STEPS; i++)
+   {
       const struct program_step *s = program.steps + i;
 
       if (!s->active)
+      {
          continue;
-      if (time_before(s, h, m)) {
+      }
+      if (time_before(s, h, m))
+      {
          if (i == 0) return valid_step_before(PROGRAM_STEPS);
          return valid_step_before(i);
       }
@@ -124,8 +141,10 @@ void LightingProgram::resetProgram(bool initial)
    program.steps[0].active = 1;
    program.steps[PROGRAM_STEPS - 1].active = 1;
 
-   if (initial) {
-      switch (loaded_program) {
+   if (initial)
+   {
+      switch (loaded_program)
+      {
          case 1:
             initialVeg();
             break;
@@ -141,7 +160,9 @@ static void readEEPBytes(uint16_t offset, void *raw, size_t len)
 {
    uint8_t *ptr = (uint8_t *)raw;
    for (size_t i = 0; i < len; i++)
+   {
       ptr[i] = EEPROM.read(offset + i);
+   }
 }
 
 /* load.. last four bytes are crc32. return if valid / not */
@@ -155,7 +176,9 @@ static bool loadEEPBytes(uint16_t offset, void *ptr, size_t len)
    uint32_t calc = crc32((const uint8_t *)ptr, len);
 
    if (calc == crc) 
+   {
       return true;
+   }
 
    return false;
 }
@@ -165,7 +188,9 @@ static void updateEEPBytes(uint16_t offset, const void *raw, size_t len)
 {
    uint8_t *ptr = (uint8_t *)raw;
    for (size_t i = 0; i < len; i++)
+   {
       EEPROM.update(offset + i, ptr[i]);
+   }
 }
 
 /* save.. last four bytes are crc32, calculated here */
@@ -184,7 +209,8 @@ uint16_t LightingProgram::offsetOfProgram(uint8_t index) const
 
 void LightingProgram::loadCalendar()
 {
-   if (!loadEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal))) {
+   if (!loadEEPBytes(CALENDAR_OFFSET, &cal, sizeof(cal)))
+   {
       memset(&cal, 0, sizeof(cal));
    }
 }
@@ -205,6 +231,7 @@ uint16_t LightingProgram::getDesiredIntensity( void )
    return desired_intensity;
 }
 
+// Called upon initiation
 uint16_t LightingProgram::loadLightControlSettings( void )
 {
    uint16_t light_level = 0;
@@ -228,7 +255,8 @@ uint16_t LightingProgram::loadLightControlSettings( void )
 
 void LightingProgram::loadSettings()
 {
-   if (!loadEEPBytes(SETTINGS_OFFSET, &settings, sizeof(settings))) {
+   if (!loadEEPBytes(SETTINGS_OFFSET, &settings, sizeof(settings)))
+   {
       settings.fade_duration_minutes = 0;
       settings.active_program = 0;
    }
@@ -247,11 +275,14 @@ void LightingProgram::setActiveProgram(uint8_t index)
 
 void LightingProgram::setFadeDuration(uint8_t minutes)
 {
-   if (settings.fade_duration_minutes != minutes) {
+   if (settings.fade_duration_minutes != minutes)
+   {
       bool need_recalculate = (minutes > settings.fade_duration_minutes);
       settings.fade_duration_minutes = minutes;
       if (need_recalculate)
+      {
          recalculate(0);
+      }
       saveSettings();
    }
 }
@@ -288,7 +319,8 @@ void LightingProgram::loadProgram(uint8_t index)
    uint16_t offset = offsetOfProgram(index);
 
    loaded_program = index;
-   if (!loadEEPBytes(offset, &program, sizeof(struct program))) {
+   if (!loadEEPBytes(offset, &program, sizeof(struct program)))
+   {
       resetProgram(true);
    }
    recalculate(0);
@@ -307,12 +339,15 @@ bool LightingProgram::findActivePhase(uint8_t& phase)
 
    getCycleTime(cycle_day);
 
-   for (int i = 0; i < NPHASES; i++) {
+   for (int i = 0; i < NPHASES; i++)
+   {
       const struct phase *p = getPhase(i);
 
-      if (p->active) {
+      if (p->active)
+      {
          next_start += p->days;
-         if (cycle_day < next_start) {
+         if (cycle_day < next_start)
+         {
             phase = i;
             return true;
          }
@@ -330,7 +365,8 @@ static bool add_time(uint8_t *h, uint8_t *m, uint8_t minutes, uint8_t sh, uint8_
       sm -= 60;
       sh += 1;
    }
-   if (((sh == 23) && (sm >= 59)) || (sh >= 24)) {
+   if (((sh == 23) && (sm >= 59)) || (sh >= 24))
+   {
       *h = 23;
       *m = 59;
       return true;
@@ -343,13 +379,18 @@ static bool add_time(uint8_t *h, uint8_t *m, uint8_t minutes, uint8_t sh, uint8_
 bool LightingProgram::step_time_overflows(const struct program_step *step) const
 {
    uint8_t end_hours, end_minutes;
-   return add_time(&end_hours, &end_minutes, settings.fade_duration_minutes, step->hour, step->minute);
+   return add_time( &end_hours,
+                    &end_minutes,
+                     settings.fade_duration_minutes,
+                     step->hour,
+                     step->minute );
 }
 
 
 void LightingProgram::recalculate_step(uint8_t step)
 {
-   if (step == 0) {
+   if (step == 0)
+   {
       ; /* do nothing, step zero is always considered valid */
    } else {
       struct program_step *prev = program.steps + step - 1;
@@ -357,13 +398,17 @@ void LightingProgram::recalculate_step(uint8_t step)
 
       uint8_t end_hours, end_minutes;
 
-      if (add_time(&end_hours, &end_minutes, settings.fade_duration_minutes, prev->hour, prev->minute)) {
+      if (add_time( &end_hours,
+                    &end_minutes,
+                     settings.fade_duration_minutes,
+                     prev->hour,
+                     prev->minute))
+      {
          prev->active = false;
-         s->active = false;
+         s->active    = false;
       }
-      if (time_before(s, end_hours, end_minutes))
-         return;
-      s->hour = end_hours;
+      if (time_before(s, end_hours, end_minutes)) return;
+      s->hour   = end_hours;
       s->minute = end_minutes;
    }
 }
@@ -378,28 +423,30 @@ void LightingProgram::recalculate(uint8_t step)
    // but for now advanced and basic rules clash
 
    if (!program.steps[PROGRAM_STEPS - 1].active)
+   {
       advanced = true;
-   else {
-      for (int i = 1; i < PROGRAM_STEPS - 1; i++) {
-         if (program.steps[i].active) {
+   } else {
+      for (int i = 1; i < PROGRAM_STEPS - 1; i++)
+      {
+         if (program.steps[i].active)
+         {
             advanced = true;
             break;
          }
       } 
    }
 
-   if (!advanced)
-      return;
+   if (!advanced) return;
 
-   for ( ; step < PROGRAM_STEPS; step++)
-      recalculate_step(step);
+   for ( ; step < PROGRAM_STEPS; step++) recalculate_step(step);
 }
 
 struct program_step *LightingProgram::startEditing(uint8_t step, uint8_t *minH, uint8_t *minM)
 {
    struct program_step *s = program.steps + step;
 
-   if (step == 0) {
+   if (step == 0)
+   {
       *minH = *minM = 0;
    } else {
       uint8_t pi = valid_step_before(step);
@@ -437,7 +484,8 @@ void LightingProgram::begin()
 
 void LightingProgram::restart()
 {
-   if (findActivePhase(current_phase)) {
+   if (findActivePhase(current_phase))
+   {
       calendar_enabled = true;
       loadProgram(getPhase(current_phase)->program);
    } else {
@@ -479,9 +527,9 @@ void LightingProgram::run_step()
    color_value[CH_WHITE] += color_delta[CH_WHITE];
    color_value[CH_BLUE]  += color_delta[CH_BLUE];
 
-   channels[CH_RED] =  roundf(color_value[CH_RED]);
+   channels[CH_RED]   = roundf(color_value[CH_RED]);
    channels[CH_WHITE] = roundf(color_value[CH_WHITE]);
-   channels[CH_BLUE] = roundf(color_value[CH_BLUE]); 
+   channels[CH_BLUE]  = roundf(color_value[CH_BLUE]); 
 
    sendProgrammedUpdate();
 }
@@ -493,21 +541,38 @@ void LightingProgram::read_NL_intensity( void )
   // code for reading in natural light level here between 0->99
   String content = "";
  
-  // TODO: check if that ';' is meant to be inside the string
   // Format: "LightLevel:XY;"
   while(HWSERIAL.available())
   {
      char character = HWSERIAL.read();
      content.concat(character);
   }
- 
-  if (content != "") {
-    Serial.println(content);
-  }
 
-   // begin temporary testing values
-   NL_intensity = (uint16_t)(last_AL_update_time % 100);
-   // end temporary testing values
+  if (content != "")
+  {
+     // make attempts to find the desired string pattern
+     for (int ind = 0; ind < 40; ind++)
+     {
+        String head    = content.substring( ind, ind + 11 );
+        char term_dig1 = content.charAt( ind + 12 );
+        char term_dig2 = content.charAt( ind + 13 );
+
+        if ( head.equals("LightLevel:") && term_dig1 == ';' )
+        {
+           String str_number = content.substring( ind + 11 );
+           NL_intensity = str_number.toInt();
+           Serial.println( NL_intensity );
+           break;
+        }
+        else if ( head.equals("LightLevel:") && term_dig2 == ';' )
+        {
+           String str_number = content.substring( ind + 11, ind + 13 );
+           NL_intensity = str_number.toInt();
+           Serial.println( NL_intensity );
+           break;
+        }
+     }
+  }
 }
 
 uint16_t LightingProgram::get_NL_intensity( void )
@@ -525,10 +590,13 @@ void LightingProgram::tick()
    if (enabled == false)
       return;
 
-   if (calendar_enabled) {
+   if (calendar_enabled)
+   {
       uint8_t next_phase;
-      if (findActivePhase(next_phase)) {
-         if (next_phase != current_phase) {
+      if (findActivePhase(next_phase))
+      {
+         if (next_phase != current_phase)
+         {
             current_phase = next_phase;
             loadProgram(getPhase(current_phase)->program);
             current_step = 0xff; // force us to fade to new step.
@@ -540,9 +608,11 @@ void LightingProgram::tick()
 
    uint8_t next = find(now);
 
-   if (next != current_step) {
+   if (next != current_step)
+   {
       current_step = next;
-      if (settings.fade_duration_minutes == 0) {
+      if (settings.fade_duration_minutes == 0)
+      {
          forceStep();
       } else {
          const struct program_step *step = program.steps + current_step;
@@ -558,13 +628,15 @@ void LightingProgram::tick()
          color_value[CH_BLUE] = channels[CH_BLUE];
          run_step();
       }
-   } else if (fade_steps_left)
+   }
+   else if (fade_steps_left)
    {
       long dt = delta_t();
 
       if (dt >= time_delta)
       {
-         if (fade_steps_left == 1) {
+         if (fade_steps_left == 1)
+         {
             forceStep();
             fade_steps_left = 0;
          } else {
