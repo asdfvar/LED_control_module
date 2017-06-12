@@ -70,8 +70,11 @@ class LightingProgram
       // save calendar to the EEPROM
       void saveCalendar();
 
-      // save lighting control parameters to the EEPROM
+      // save lighting control level parameter to the EEPROM
       void saveLightControl( uint16_t light_level );
+
+      // save enable light control parameter to the EEPROM
+      void saveEnableLightControl( bool enabled );
 
       // edit active program index
       inline uint8_t getActiveProgram() const { return settings.active_program; }
@@ -155,6 +158,8 @@ class LightingProgram
       uint16_t get_NL_intensity( void );
       uint16_t get_AL_intensity( void );
       uint16_t getDesiredIntensity( void );
+      bool get_enable_light_control( void );
+      bool set_enable_light_control( bool );
 
    private:
       bool calendar_enabled;
@@ -190,6 +195,7 @@ class LightingProgram
       uint16_t AL_intensity; // artificial light-level intensity
       uint16_t NL_intensity; // natural light-level intensity
       uint16_t desired_intensity; // desired light-level intensity
+      bool     enable_light_control;
 
       // eeprom address for a given program
       uint16_t offsetOfProgram(uint8_t index) const;

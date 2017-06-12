@@ -13,7 +13,8 @@
 
 #define SETTINGS_OFFSET      (EEPROM_SIZE     - CRC_LENGTH - sizeof( struct program_settings ))
 #define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof( struct calendar         ))
-#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof( uint16_t                ))
+#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET      - CRC_LENGTH - sizeof( uint16_t                ))
+#define ENABLE_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t    ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -225,6 +226,21 @@ void LightingProgram::saveLightControl( uint16_t light_level )
    saveEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
    desired_intensity = light_level;
 }
+void LightingProgram::saveEnableLightControl( bool enabled )
+{
+   uint16_t enabled_setting = 0;
+   if ( enabled )
+   {
+      enabled_setting = 1;
+   }
+   else
+   {
+      enabled_setting = 0;
+   }
+
+   saveEEPBytes(ENABLE_LIGHT_CONTROL_OFFSET, &enabled_setting, sizeof(enabled_setting));
+
+}
 
 uint16_t LightingProgram::getDesiredIntensity( void )
 {
@@ -248,6 +264,21 @@ uint16_t LightingProgram::loadLightControlSettings( void )
       AL_intensity = desired_intensity - NL_intensity;
    } else {
       AL_intensity = 0;
+   }
+
+   uint16_t enabled_setting = 0;
+   if (!loadEEPBytes(ENABLE_LIGHT_CONTROL_OFFSET, &enabled_setting, sizeof(enabled_setting)))
+   {
+      enabled_setting = 0;
+   }
+
+   if ( enabled_setting == 1 )
+   {
+      enable_light_control = true;
+   }
+   else
+   {
+      enable_light_control = false;
    }
 
    return light_level;
@@ -561,14 +592,12 @@ void LightingProgram::read_NL_intensity( void )
         {
            String str_number = content.substring( ind + 11 );
            NL_intensity = str_number.toInt();
-           Serial.println( NL_intensity );
            break;
         }
         else if ( head.equals("LightLevel:") && term_dig2 == ';' )
         {
            String str_number = content.substring( ind + 11, ind + 13 );
            NL_intensity = str_number.toInt();
-           Serial.println( NL_intensity );
            break;
         }
      }
@@ -583,6 +612,16 @@ uint16_t LightingProgram::get_NL_intensity( void )
 uint16_t LightingProgram::get_AL_intensity( void )
 {
    return AL_intensity;
+}
+
+bool LightingProgram::get_enable_light_control( void )
+{
+   return enable_light_control;
+}
+
+bool LightingProgram::set_enable_light_control( bool setting )
+{
+   enable_light_control = setting;
 }
 
 void LightingProgram::tick()

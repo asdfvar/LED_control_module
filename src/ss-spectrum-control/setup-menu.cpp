@@ -12,7 +12,7 @@ void WSetupMenu::paint()
    program_list_button.paint(F("EDIT PROGRAMS"), ILI9341_GREEN, DARK_COLOR);
    edit_time_button.paint(F("SET TIME"), ILI9341_GREEN, DARK_COLOR);
    edit_cal_button.paint(F("SET CALENDAR"), ILI9341_GREEN, DARK_COLOR);
-   light_control_button.paint(F("LIGHT CONTROL"), ILI9341_GREEN, DARK_COLOR);
+   light_control_button.paint(F("LIGHT SENSOR"), ILI9341_GREEN, DARK_COLOR);
 
    back_button.paint(F("BACK"), ILI9341_GREEN, DARK_COLOR);
 }
