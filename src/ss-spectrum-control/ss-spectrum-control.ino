@@ -149,35 +149,6 @@ void loop()
       y2 = map(y2, 0, 240, 240, 0);
 #endif
 
-#if 0
-      WLabel::paint(F("x"),
-            x1,
-            y1,
-            ILI9341_WHITE,
-            ILI9341_GREEN,
-            10,
-            10);
-      WLabel::paint(F("x"),
-            x2,
-            y2,
-            ILI9341_RED,
-            ILI9341_BLUE,
-            10,
-            10);
-      static int16_t max_x = x1;
-      static int16_t min_x = x1;
-      static int16_t max_y = y1;
-      static int16_t min_y = y1;
-      if (x1 > max_x) max_x = x1;
-      if (y1 > max_y) max_y = y1;
-      if (x1 < min_x) min_x = x1;
-      if (y1 < min_y) min_y = y1;
-      debug_display1.paint_four_digits( min_x, ILI9341_BLACK, ILI9341_WHITE);
-      debug_display2.paint_four_digits( max_x, ILI9341_BLACK, ILI9341_WHITE);
-      debug_display3.paint_four_digits( min_y, ILI9341_BLACK, ILI9341_WHITE);
-      debug_display4.paint_four_digits( max_y, ILI9341_BLACK, ILI9341_WHITE);
-#endif
-
       debouncer.hit(x1, y1, x2, y2);
    } else {
       debouncer.nohit();
