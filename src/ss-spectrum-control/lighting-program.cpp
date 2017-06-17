@@ -566,7 +566,7 @@ void LightingProgram::run_step()
 }
 
 // read and return natural light level reading
-void LightingProgram::read_NL_intensity( void )
+int LightingProgram::read_NL_intensity( void )
 {
 
   // code for reading in natural light level here between 0->99
@@ -602,6 +602,8 @@ void LightingProgram::read_NL_intensity( void )
         }
      }
   }
+
+  return NL_intensity;
 }
 
 uint16_t LightingProgram::get_NL_intensity( void )
@@ -684,8 +686,11 @@ void LightingProgram::tick()
       }
    }
 
-   // update required artificial light-level information
-   if ( now.secondstime() >= last_AL_update_time + 5 )
+   int output_channel[3] = { channels[CH_RED], channels[CH_WHITE], channels[CH_BLUE] };
+
+   // update required artificial light-level information after set amount of time (seconds)
+   const int update_delay = 60;
+   if ( now.secondstime() >= last_AL_update_time + update_delay )
    {
       last_AL_update_time = now.secondstime();
 
@@ -699,6 +704,59 @@ void LightingProgram::tick()
          AL_intensity = 0;
       }
 
-      // code for sending out AL_intensity to device
+      /*
+      ** RWB to AL intensity mapping
+      */
+      const float AL_mapping[3] = { 0.0859f, 0.0429f, 0.0429f };
+
+      /*
+      ** apply AL factor to the user defined color channels to compute user AL setting
+      */
+      float user_AL_setting = (float)channels[CH_RED]   * AL_mapping[0] +
+                              (float)channels[CH_WHITE] * AL_mapping[1] +
+                              (float)channels[CH_BLUE]  * AL_mapping[2];
+
+      if (channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0)
+      {
+         /*
+          ** compute the scale factor to apply to the user defined AL setting (channels)
+          ** to compensate for the NL level
+          */
+         float scale_factor = (float)AL_intensity / user_AL_setting;
+
+         /*
+          ** lower the output RWB channels based on the NL level
+          */
+         if (scale_factor < 1.0f)
+         {
+            output_channel[CH_RED]   = (int)((float)channels[CH_RED]   * scale_factor);
+            output_channel[CH_WHITE] = (int)((float)channels[CH_WHITE] * scale_factor);
+            output_channel[CH_BLUE]  = (int)((float)channels[CH_BLUE]  * scale_factor);
+         }
+         else
+         {
+            output_channel[CH_RED]   = channels[CH_RED];
+            output_channel[CH_WHITE] = channels[CH_WHITE];
+            output_channel[CH_BLUE]  = channels[CH_BLUE];
+         }
+      }
+      else
+      {
+         output_channel[CH_RED]   = 0;
+         output_channel[CH_WHITE] = 0;
+         output_channel[CH_BLUE]  = 0;
+      }
+
    }
+
+   Serial.print("output color channels (RWB): R");
+   Serial.print( output_channel[CH_RED] );
+   Serial.print(" W");
+   Serial.print( output_channel[CH_WHITE] );
+   Serial.print(" B");
+   Serial.print( output_channel[CH_BLUE] );
+   Serial.println();
+
+   // code for sending out AL_intensity to device
+
 }

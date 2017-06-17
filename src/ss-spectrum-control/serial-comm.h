@@ -21,7 +21,7 @@ void sendManualUpdate();
 // send current value to hardware, but repeat any 0/0/0 commands every 15 minutes
 void sendProgrammedUpdate();
 
-// h/w work-around: repeat the last command after a few hundred mS
+// h/w work-around: repeat the last command after a few hundred ms
 void repeatedUpdatePoll();
 
 // tick, every second, to poll for repeated 0/0/0 commands

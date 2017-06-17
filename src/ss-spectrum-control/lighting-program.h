@@ -154,7 +154,7 @@ class LightingProgram
       }
 
       // Artificial and Natural light intensity readings and manipulation
-      void     read_NL_intensity( void );
+      int      read_NL_intensity( void );
       uint16_t get_NL_intensity( void );
       uint16_t get_AL_intensity( void );
       uint16_t getDesiredIntensity( void );
