@@ -510,6 +510,11 @@ void LightingProgram::begin()
    loadCalendar();
    loadLightControlSettings();
    loadSettings();
+
+   output_channels[0] = channels[CH_RED];
+   output_channels[1] = channels[CH_WHITE];
+   output_channels[2] = channels[CH_BLUE];
+
    restart();
 }
 
@@ -624,10 +629,12 @@ bool LightingProgram::get_enable_light_control( void )
 bool LightingProgram::set_enable_light_control( bool setting )
 {
    enable_light_control = setting;
+   return setting;
 }
 
 void LightingProgram::tick()
 {
+
    if (enabled == false)
       return;
 
@@ -664,9 +671,9 @@ void LightingProgram::tick()
          color_delta[CH_WHITE] = color_step(channels[CH_WHITE], step->wh);
          color_delta[CH_BLUE]  = color_step(channels[CH_BLUE], step->b);
 
-         color_value[CH_RED] = channels[CH_RED];
+         color_value[CH_RED]   = channels[CH_RED];
          color_value[CH_WHITE] = channels[CH_WHITE];
-         color_value[CH_BLUE] = channels[CH_BLUE];
+         color_value[CH_BLUE]  = channels[CH_BLUE];
          run_step();
       }
    }
@@ -685,8 +692,6 @@ void LightingProgram::tick()
          }
       }
    }
-
-   int output_channel[3] = { channels[CH_RED], channels[CH_WHITE], channels[CH_BLUE] };
 
    // update required artificial light-level information after set amount of time (seconds)
    const int update_delay = 60;
@@ -729,32 +734,38 @@ void LightingProgram::tick()
           */
          if (scale_factor < 1.0f)
          {
-            output_channel[CH_RED]   = (int)((float)channels[CH_RED]   * scale_factor);
-            output_channel[CH_WHITE] = (int)((float)channels[CH_WHITE] * scale_factor);
-            output_channel[CH_BLUE]  = (int)((float)channels[CH_BLUE]  * scale_factor);
+            output_channels[CH_RED]   = (int)((float)channels[CH_RED]   * scale_factor);
+            output_channels[CH_WHITE] = (int)((float)channels[CH_WHITE] * scale_factor);
+            output_channels[CH_BLUE]  = (int)((float)channels[CH_BLUE]  * scale_factor);
          }
          else
          {
-            output_channel[CH_RED]   = channels[CH_RED];
-            output_channel[CH_WHITE] = channels[CH_WHITE];
-            output_channel[CH_BLUE]  = channels[CH_BLUE];
+            output_channels[CH_RED]   = channels[CH_RED];
+            output_channels[CH_WHITE] = channels[CH_WHITE];
+            output_channels[CH_BLUE]  = channels[CH_BLUE];
          }
       }
       else
       {
-         output_channel[CH_RED]   = 0;
-         output_channel[CH_WHITE] = 0;
-         output_channel[CH_BLUE]  = 0;
+         output_channels[CH_RED]   = 0;
+         output_channels[CH_WHITE] = 0;
+         output_channels[CH_BLUE]  = 0;
       }
 
    }
 
    Serial.print("output color channels (RWB): R");
-   Serial.print( output_channel[CH_RED] );
+   Serial.print( output_channels[CH_RED] );
    Serial.print(" W");
-   Serial.print( output_channel[CH_WHITE] );
+   Serial.print( output_channels[CH_WHITE] );
    Serial.print(" B");
-   Serial.print( output_channel[CH_BLUE] );
+   Serial.print( output_channels[CH_BLUE] );
+   Serial.print("     color channels (RWB): R");
+   Serial.print( channels[CH_RED] );
+   Serial.print(" W");
+   Serial.print( channels[CH_WHITE] );
+   Serial.print(" B");
+   Serial.print( channels[CH_BLUE] );
    Serial.println();
 
    // code for sending out AL_intensity to device

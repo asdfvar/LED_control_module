@@ -13,6 +13,9 @@
 // current values
 uint8_t channels[3];
 
+// output channels
+uint8_t output_channels[3];
+
 // last sent values
 static uint8_t last_channels[3];
 

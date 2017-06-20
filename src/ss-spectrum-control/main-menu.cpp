@@ -72,16 +72,16 @@ void WMainMenu::tick()
       last_second = now.second();
       now_seconds.paint_two_digits(last_second, ILI9341_GREEN, ILI9341_BLACK);
    }
-   if (last_rwhb[CH_RED] != channels[CH_RED]) {
-      last_rwhb[CH_RED] = channels[CH_RED];
+   if (last_rwhb[CH_RED] != output_channels[CH_RED]) {
+      last_rwhb[CH_RED] = output_channels[CH_RED];
       now_r.paint_two_digits(last_rwhb[CH_RED], ILI9341_GREEN, ILI9341_BLACK);
    }
-   if (last_rwhb[CH_WHITE] != channels[CH_WHITE]) {
-      last_rwhb[CH_WHITE] = channels[CH_WHITE];
+   if (last_rwhb[CH_WHITE] != output_channels[CH_WHITE]) {
+      last_rwhb[CH_WHITE] = output_channels[CH_WHITE];
       now_wh.paint_two_digits(last_rwhb[CH_WHITE], ILI9341_GREEN, ILI9341_BLACK);
    }
-   if (last_rwhb[CH_BLUE] != channels[CH_BLUE]) {
-      last_rwhb[CH_BLUE] = channels[CH_BLUE];
+   if (last_rwhb[CH_BLUE] != output_channels[CH_BLUE]) {
+      last_rwhb[CH_BLUE] = output_channels[CH_BLUE];
       now_b.paint_two_digits(last_rwhb[CH_BLUE], ILI9341_GREEN, ILI9341_BLACK);
    }
 

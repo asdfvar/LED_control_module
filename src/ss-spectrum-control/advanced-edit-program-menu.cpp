@@ -149,11 +149,11 @@ static uint8_t value_for(enum edit_list n, uint8_t *max)
 {
    switch (n) {
       case NOT_EDITING: *max = (PROGRAM_STEPS - 1); return step_index;
-      case E_HOURS: *max = 23; return step->hour;
+      case E_HOURS:   *max = 23; return step->hour;
       case E_MINUTES: *max = 59; return step->minute;
-      case E_RED: *max = 99; return step->r;
-      case E_WHITE: *max = 99; return step->wh;
-      case E_BLUE: *max = 99; return step->b;
+      case E_RED:     *max = 99; return step->r;
+      case E_WHITE:   *max = 99; return step->wh;
+      case E_BLUE:    *max = 99; return step->b;
    }
    return 0;
 }
@@ -161,12 +161,12 @@ static uint8_t value_for(enum edit_list n, uint8_t *max)
 static void set_value_for(enum edit_list n, uint8_t value)
 {
    switch (n) {
-      case NOT_EDITING: step_index = value; break;
-      case E_HOURS: step->hour = value; break;
-      case E_MINUTES: step->minute = value; break;
-      case E_RED: step->r = value; break;
-      case E_WHITE: step->wh = value; break;
-      case E_BLUE: step->b = value; break;
+      case NOT_EDITING: step_index   = value; break;
+      case E_HOURS:     step->hour   = value; break;
+      case E_MINUTES:   step->minute = value; break;
+      case E_RED:       step->r      = value; break;
+      case E_WHITE:     step->wh     = value; break;
+      case E_BLUE:      step->b      = value; break;
    }
    if ((n == E_BLUE) || (n == E_WHITE) || (n == E_RED)) {
       channels[CH_RED]   = step->r;
@@ -187,9 +187,9 @@ static void start_editing(enum edit_list n)
 
 static void edit_value(int chg)
 {
-   uint8_t max = 0;
-   uint8_t knob = value_for(am_editing, &max);
-   int result = (int)(knob) + chg;
+   uint8_t max    = 0;
+   uint8_t knob   = value_for(am_editing, &max);
+   int     result = (int)(knob) + chg;
 
    if (result < 0)
       result = 0;

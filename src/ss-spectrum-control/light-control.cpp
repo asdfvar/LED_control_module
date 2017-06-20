@@ -41,7 +41,7 @@ void WLightControl::touch(uint16_t x, uint16_t y)
    {
       lp.saveLightControl( z_desired_intensity );
       lp.saveEnableLightControl( lp.get_enable_light_control() );
-      lp.restart();
+//      lp.restart();
       menu.setMenu( setup_menu );
    } 
    else if ( clear_button.hit(x, y) )

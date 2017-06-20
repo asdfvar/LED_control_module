@@ -12,6 +12,9 @@ enum channels {
 // current values
 extern uint8_t channels[3];
 
+// output values
+extern uint8_t output_channels[3];
+
 // init serial comms
 void initSerialComms();
 
