@@ -36,7 +36,7 @@ static uint16_t repeat_programmed_off_seconds;
 
 static bool channels_are_all_off(void)
 {
-   if ((channels[0] == 0) && (channels[1] == 0) && (channels[2] == 0))
+   if ((output_channels[0] == 0) && (output_channels[1] == 0) && (output_channels[2] == 0))
       return true;
    return false;
 }
@@ -49,11 +49,11 @@ static void raw_send_update()
 
 static void sendUpdate(uint16_t repeat_programmed_off)
 {
-   if (!last_valid || memcmp(last_channels, channels, 3)) {
+   if (!last_valid || memcmp(last_channels, output_channels, 3)) {
       snprintf(output, sizeof(output), "ABC..NextLevel:%d:%d:%d:00\r\n",
-            channels[CH_RED], channels[CH_WHITE], channels[CH_BLUE]);
+            output_channels[CH_RED], output_channels[CH_WHITE], output_channels[CH_BLUE]);
 
-      memcpy(last_channels, channels, 3);
+      memcpy(last_channels, output_channels, 3);
       raw_send_update();
       last_valid = true;
       repeat_programmed_off_seconds = 0;

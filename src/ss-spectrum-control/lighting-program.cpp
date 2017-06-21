@@ -694,7 +694,7 @@ void LightingProgram::tick()
    }
 
    // update required artificial light-level information after set amount of time (seconds)
-   const int update_delay = 60;
+   const int update_delay = 5;
    if ( now.secondstime() >= last_AL_update_time + update_delay )
    {
       last_AL_update_time = now.secondstime();
@@ -721,7 +721,14 @@ void LightingProgram::tick()
                               (float)channels[CH_WHITE] * AL_mapping[1] +
                               (float)channels[CH_BLUE]  * AL_mapping[2];
 
-      if (channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0)
+      if (channels[CH_RED] == 99 && channels[CH_WHITE] == 99 && channels[CH_BLUE] == 99)
+      {
+         output_channels[CH_RED]   = channels[CH_RED];
+         output_channels[CH_WHITE] = channels[CH_WHITE];
+         output_channels[CH_BLUE]  = channels[CH_BLUE];
+      }
+      else if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
+               NL_intensity > 0)
       {
          /*
           ** compute the scale factor to apply to the user defined AL setting (channels)
@@ -747,9 +754,9 @@ void LightingProgram::tick()
       }
       else
       {
-         output_channels[CH_RED]   = 0;
-         output_channels[CH_WHITE] = 0;
-         output_channels[CH_BLUE]  = 0;
+         output_channels[CH_RED]   = channels[CH_RED];
+         output_channels[CH_WHITE] = channels[CH_WHITE];
+         output_channels[CH_BLUE]  = channels[CH_BLUE];
       }
 
    }
@@ -767,7 +774,5 @@ void LightingProgram::tick()
    Serial.print(" B");
    Serial.print( channels[CH_BLUE] );
    Serial.println();
-
-   // code for sending out AL_intensity to device
 
 }
