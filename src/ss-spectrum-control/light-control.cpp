@@ -88,11 +88,11 @@ void WLightControl::touch(uint16_t x, uint16_t y)
 
       if ( !current_setting == true )
       {
-         on_off_button.paint( F("ON"),        ILI9341_GREEN, DARK_COLOR);
+         on_off_button.paint( F("ON"),  ILI9341_GREEN, DARK_COLOR);
       }
       else
       {
-         on_off_button.paint( F("OFF"),        ILI9341_RED, DARK_COLOR);
+         on_off_button.paint( F("OFF"), ILI9341_RED, DARK_COLOR);
       }
    }
 }

@@ -29,24 +29,24 @@ WColorLine::WColorLine(int idx, uint16_t color, int y)
 void WColorLine::paint()
 {
    set_y(y);
-   _on.paint(F("ON"), ILI9341_GREEN, ILI9341_BLACK);
-   _slow_inc.paint(F("+"), ILI9341_GREEN, ILI9341_BLACK);
-   _fast_inc.paint(F("+"), ILI9341_GREEN, ILI9341_BLACK);
-   _value.paint(channels[idx], ILI9341_BLACK, color);
-   _fast_dec.paint(F("-"), ILI9341_GREEN, ILI9341_BLACK);
-   _slow_dec.paint(F("-"), ILI9341_GREEN, ILI9341_BLACK);
-   _off.paint(F("OFF"), ILI9341_GREEN, ILI9341_BLACK);
+   _on.paint(       F("ON"), ILI9341_GREEN,  ILI9341_BLACK);
+   _slow_inc.paint( F("+"), ILI9341_GREEN,   ILI9341_BLACK);
+   _fast_inc.paint( F("+"), ILI9341_GREEN,   ILI9341_BLACK);
+   _value.paint(    output_channels[idx],    ILI9341_BLACK, color);
+   _fast_dec.paint( F("-"), ILI9341_GREEN,   ILI9341_BLACK);
+   _slow_dec.paint( F("-"), ILI9341_GREEN,   ILI9341_BLACK);
+   _off.paint(      F("OFF"), ILI9341_GREEN, ILI9341_BLACK);
 }
 
 void WColorLine::update()
 {
    set_y(y);
-   _value.paint(channels[idx], ILI9341_BLACK, color);
+   _value.paint(output_channels[idx], ILI9341_BLACK, color);
 }
 
 void WColorLine::touch(uint16_t x, uint16_t y)
 {
-   int updated = channels[idx];
+   int updated = output_channels[idx];
 
    set_y(this->y);
 
@@ -69,8 +69,8 @@ void WColorLine::touch(uint16_t x, uint16_t y)
    if (updated > 99)
       updated = 99;
 
-   if (updated != channels[idx]) {
-      channels[idx] = updated;
+   if (updated != output_channels[idx]) {
+      output_channels[idx] = updated;
       update();
    }
 }

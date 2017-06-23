@@ -721,14 +721,12 @@ void LightingProgram::tick()
                               (float)channels[CH_WHITE] * AL_mapping[1] +
                               (float)channels[CH_BLUE]  * AL_mapping[2];
 
-      if (channels[CH_RED] == 99 && channels[CH_WHITE] == 99 && channels[CH_BLUE] == 99)
-      {
-         output_channels[CH_RED]   = channels[CH_RED];
-         output_channels[CH_WHITE] = channels[CH_WHITE];
-         output_channels[CH_BLUE]  = channels[CH_BLUE];
-      }
-      else if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
-               NL_intensity > 0)
+      /*
+      ** modify the output color channels if we are using the NL intensity control
+      */
+      if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
+           NL_intensity > 0                                                         &&
+           enable_light_control )
       {
          /*
           ** compute the scale factor to apply to the user defined AL setting (channels)
@@ -759,20 +757,10 @@ void LightingProgram::tick()
          output_channels[CH_BLUE]  = channels[CH_BLUE];
       }
 
+      /*
+      ** send updated output channel colors to the hardware
+      */
+      sendProgrammedUpdate();
    }
-
-   Serial.print("output color channels (RWB): R");
-   Serial.print( output_channels[CH_RED] );
-   Serial.print(" W");
-   Serial.print( output_channels[CH_WHITE] );
-   Serial.print(" B");
-   Serial.print( output_channels[CH_BLUE] );
-   Serial.print("     color channels (RWB): R");
-   Serial.print( channels[CH_RED] );
-   Serial.print(" W");
-   Serial.print( channels[CH_WHITE] );
-   Serial.print(" B");
-   Serial.print( channels[CH_BLUE] );
-   Serial.println();
 
 }

@@ -49,6 +49,20 @@ static void raw_send_update()
 
 static void sendUpdate(uint16_t repeat_programmed_off)
 {
+   Serial.print("output color channels (RWB): R");
+   Serial.print( output_channels[CH_RED] );
+   Serial.print(" W");
+   Serial.print( output_channels[CH_WHITE] );
+   Serial.print(" B");
+   Serial.print( output_channels[CH_BLUE] );
+   Serial.print("     color channels (RWB): R");
+   Serial.print( channels[CH_RED] );
+   Serial.print(" W");
+   Serial.print( channels[CH_WHITE] );
+   Serial.print(" B");
+   Serial.print( channels[CH_BLUE] );
+   Serial.println();
+
    if (!last_valid || memcmp(last_channels, output_channels, 3)) {
       snprintf(output, sizeof(output), "ABC..NextLevel:%d:%d:%d:00\r\n",
             output_channels[CH_RED], output_channels[CH_WHITE], output_channels[CH_BLUE]);

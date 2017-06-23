@@ -74,15 +74,24 @@ void WMainMenu::tick()
    }
    if (last_rwhb[CH_RED] != output_channels[CH_RED]) {
       last_rwhb[CH_RED] = output_channels[CH_RED];
-      now_r.paint_two_digits(last_rwhb[CH_RED], ILI9341_GREEN, ILI9341_BLACK);
+      if ( output_channels[CH_RED] != channels[CH_RED] && lp.get_enable_light_control() )
+         now_r.paint_two_digits(last_rwhb[CH_RED], ILI9341_RED, ILI9341_BLACK);
+      else
+         now_r.paint_two_digits(channels[CH_RED], ILI9341_GREEN, ILI9341_BLACK);
    }
    if (last_rwhb[CH_WHITE] != output_channels[CH_WHITE]) {
       last_rwhb[CH_WHITE] = output_channels[CH_WHITE];
-      now_wh.paint_two_digits(last_rwhb[CH_WHITE], ILI9341_GREEN, ILI9341_BLACK);
+      if ( output_channels[CH_WHITE] != channels[CH_WHITE] && lp.get_enable_light_control() )
+         now_wh.paint_two_digits(last_rwhb[CH_WHITE], ILI9341_RED, ILI9341_BLACK);
+      else
+         now_wh.paint_two_digits(channels[CH_WHITE], ILI9341_GREEN, ILI9341_BLACK);
    }
    if (last_rwhb[CH_BLUE] != output_channels[CH_BLUE]) {
       last_rwhb[CH_BLUE] = output_channels[CH_BLUE];
-      now_b.paint_two_digits(last_rwhb[CH_BLUE], ILI9341_GREEN, ILI9341_BLACK);
+      if ( output_channels[CH_BLUE] != channels[CH_BLUE] && lp.get_enable_light_control() )
+         now_b.paint_two_digits(last_rwhb[CH_BLUE], ILI9341_RED, ILI9341_BLACK);
+      else
+         now_b.paint_two_digits(channels[CH_BLUE], ILI9341_GREEN, ILI9341_BLACK);
    }
 
    uint8_t program = lp.getLoadedProgram();

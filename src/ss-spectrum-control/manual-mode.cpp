@@ -72,12 +72,12 @@ void WManualMode::touch(uint16_t x, uint16_t y)
       menu.setMenu( main_menu);
    } else if (view_button.hit(x, y)) {
       if (saved_settings[0] == 0xff) {
-         memcpy(saved_settings, channels, 3);
-         channels[CH_RED] = 0;
-         channels[CH_WHITE] = 99;
-         channels[CH_BLUE] = 0;
+         memcpy(saved_settings, output_channels, 3);
+         output_channels[CH_RED] = 0;
+         output_channels[CH_WHITE] = 99;
+         output_channels[CH_BLUE] = 0;
       } else {
-         memcpy(channels, saved_settings, 3);
+         memcpy(output_channels, saved_settings, 3);
          saved_settings[0] = 0xff;
       }
       red_line.update();
