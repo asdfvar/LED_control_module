@@ -30,15 +30,6 @@ static uint8_t offset;
 static uint8_t pos;
 static bool session;
 
-
-static uint8_t pop_u8()
-{
-   return buf[offset++];
-}
-
-
-
-
 static void start_reply(uint8_t cmd)
 {
    buf[0] = FRAME_START;
@@ -82,8 +73,6 @@ static void stop_session_cmd()
 
 static void dump_program_cmd()
 {
-   uint8_t prog = pop_u8();
-
    start_reply(CMD_DUMP_PROGRAM);
 
    send_reply();
