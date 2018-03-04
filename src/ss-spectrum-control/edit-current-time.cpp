@@ -32,7 +32,7 @@ static uint8_t *knob_for(enum edit_list n, uint8_t *max)
 {
    switch (n) {
       case NOT_EDITING: return nullptr;
-      case E_HOURS: *max = 23; return &hour;
+      case E_HOURS:   *max = 23; return &hour;
       case E_MINUTES: *max = 59; return &minute;
    }
    return nullptr;
@@ -42,7 +42,9 @@ static void start_editing(enum edit_list n)
 {
    if (am_editing != NOT_EDITING)
       update_widget_for(am_editing, ILI9341_BLACK);
+
    am_editing = n;
+
    if (am_editing != NOT_EDITING)
       update_widget_for(am_editing, ILI9341_CYAN);
 }
@@ -103,6 +105,5 @@ void WEditCurrentTime::touch(uint16_t x, uint16_t y)
 
    else if (hours_label.hit(x, y)) start_editing(E_HOURS);
    else if (minutes_label.hit(x, y)) start_editing(E_MINUTES);
-   else
-      start_editing(NOT_EDITING);
+   else start_editing(NOT_EDITING);
 }

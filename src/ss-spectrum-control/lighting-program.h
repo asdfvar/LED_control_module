@@ -73,6 +73,9 @@ class LightingProgram
       // save lighting control level parameter to the EEPROM
       void saveLightControl( uint16_t light_level );
 
+      // save max lighting control level parameter to the EEPROM
+      void saveMaxLightControl( uint16_t light_level );
+
       // save enable light control parameter to the EEPROM
       void saveEnableLightControl( bool enabled );
 
@@ -157,6 +160,8 @@ class LightingProgram
       int      read_NL_intensity( void );
       uint16_t get_NL_intensity( void );
       uint16_t get_AL_intensity( void );
+      uint16_t get_max_AL_intensity( void );
+      void     set_max_AL_intensity( uint16_t );
       uint16_t getDesiredIntensity( void );
       bool get_enable_light_control( void );
       bool set_enable_light_control( bool );
@@ -193,6 +198,7 @@ class LightingProgram
 
       long last_AL_update_time;
       uint16_t AL_intensity; // artificial light-level intensity
+      uint16_t max_AL_intensity; // max artificial light-level intensity
       uint16_t NL_intensity; // natural light-level intensity
       uint16_t desired_intensity; // desired light-level intensity
       bool     enable_light_control;

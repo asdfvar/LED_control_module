@@ -13,8 +13,9 @@
 
 #define SETTINGS_OFFSET      (EEPROM_SIZE     - CRC_LENGTH - sizeof( struct program_settings ))
 #define CALENDAR_OFFSET      (SETTINGS_OFFSET - CRC_LENGTH - sizeof( struct calendar         ))
-#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET      - CRC_LENGTH - sizeof( uint16_t                ))
-#define ENABLE_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t    ))
+#define LIGHT_CONTROL_OFFSET (CALENDAR_OFFSET - CRC_LENGTH - sizeof( uint16_t                ))
+#define MAX_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t       ))
+#define ENABLE_LIGHT_CONTROL_OFFSET (MAX_LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t    ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -226,6 +227,13 @@ void LightingProgram::saveLightControl( uint16_t light_level )
    saveEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
    desired_intensity = light_level;
 }
+
+void LightingProgram::saveMaxLightControl( uint16_t light_level )
+{
+   saveEEPBytes(MAX_LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level));
+   desired_intensity = light_level;
+}
+
 void LightingProgram::saveEnableLightControl( bool enabled )
 {
    uint16_t enabled_setting = 0;
@@ -250,13 +258,22 @@ uint16_t LightingProgram::getDesiredIntensity( void )
 // Called upon initiation
 uint16_t LightingProgram::loadLightControlSettings( void )
 {
+   // TODO: can this modify the private variable directly?
    uint16_t light_level = 0;
    if (!loadEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
    {
       light_level = 0;
    }
 
+   uint16_t max_light_level = 0;
+   if (!loadEEPBytes(MAX_LIGHT_CONTROL_OFFSET, &max_light_level, sizeof(max_light_level)))
+   {
+      max_light_level = 0;
+   }
+
    desired_intensity = light_level;
+   max_AL_intensity  = max_light_level;
+
    read_NL_intensity();
 
    if ( desired_intensity > NL_intensity && NL_intensity > 0)
@@ -621,6 +638,16 @@ uint16_t LightingProgram::get_AL_intensity( void )
    return AL_intensity;
 }
 
+uint16_t LightingProgram::get_max_AL_intensity( void )
+{
+   return max_AL_intensity;
+}
+
+void LightingProgram::set_max_AL_intensity( uint16_t value )
+{
+   max_AL_intensity = value;
+}
+
 bool LightingProgram::get_enable_light_control( void )
 {
    return enable_light_control;
@@ -712,10 +739,21 @@ void LightingProgram::tick()
       /*
       ** RWB to AL intensity mapping
       */
-      const float AL_mapping[3] = { 0.0859f, 0.0429f, 0.0429f };
+// TODO: remove this
+//      const float AL_mapping[3] = { 0.0859f, 0.0429f, 0.0429f };
+
+      const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
+      const float sum_unit_AL_mapping = 1.6327f;
+
+      float scale = ((float)(max_AL_intensity)) / (99.0f * sum_unit_AL_mapping);
+
+      // AL_mapping applied to max setting (99) results in max_AL_intensity
+      float AL_mapping[3] = { unit_AL_mapping[0] * scale,
+                              unit_AL_mapping[1] * scale,
+                              unit_AL_mapping[2] * scale };
 
       /*
-      ** apply AL factor to the user defined color channels to compute user AL setting
+      ** apply AL factor to the user-defined color channels to compute user AL setting
       */
       float user_AL_setting = (float)channels[CH_RED]   * AL_mapping[0] +
                               (float)channels[CH_WHITE] * AL_mapping[1] +
