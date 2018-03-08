@@ -259,6 +259,7 @@ uint16_t LightingProgram::getDesiredIntensity( void )
 uint16_t LightingProgram::loadLightControlSettings( void )
 {
    // TODO: can this modify the private variable directly?
+   // TODO: move this to its own private function
    uint16_t light_level = 0;
    if (!loadEEPBytes(LIGHT_CONTROL_OFFSET, &light_level, sizeof(light_level)))
    {
@@ -747,46 +748,76 @@ void LightingProgram::tick()
 
       float scale = ((float)(max_AL_intensity)) / (99.0f * sum_unit_AL_mapping);
 
-      // AL_mapping applied to max setting (99) results in max_AL_intensity
+      // artificial-light mapping. Scaled for [0, 99] -> [0, max AL intensity]
       float AL_mapping[3] = { unit_AL_mapping[0] * scale,
                               unit_AL_mapping[1] * scale,
                               unit_AL_mapping[2] * scale };
 
-      /*
-      ** apply AL factor to the user-defined color channels to compute user AL setting
-      */
-      float user_AL_setting = (float)channels[CH_RED]   * AL_mapping[0] +
-                              (float)channels[CH_WHITE] * AL_mapping[1] +
-                              (float)channels[CH_BLUE]  * AL_mapping[2];
+      int sum_sqr_channels = (channels[CH_RED]   * channels[CH_RED]   +
+                              channels[CH_WHITE] * channels[CH_WHITE] +
+                              channels[CH_BLUE]  * channels[CH_BLUE]);
 
-      /*
-      ** modify the output color channels if we are using the NL intensity control
-      */
+      float norm_fact;
+      if (sum_sqr_channels > 0)
+      {
+         norm_fact = 1.0f / sqrtf ((float)sum_sqr_channels);
+      } else {
+         norm_fact = 1.0f;
+      }
+
+      // channel vector of unit length
+      float unit_channels[3] = { ((float)channels[CH_RED])   * norm_fact,
+                                 ((float)channels[CH_WHITE]) * norm_fact,
+                                 ((float)channels[CH_BLUE])  * norm_fact };
+
+      // modify the output color channels if we are using the NL intensity control
       if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
            NL_intensity > 0                                                         &&
            enable_light_control )
       {
-         /*
-          ** compute the scale factor to apply to the user defined AL setting (channels)
-          ** to compensate for the NL level
-          */
-         float scale_factor = (float)AL_intensity / user_AL_setting;
 
-         /*
-          ** lower the output RWB channels based on the NL level
-          */
-         if (scale_factor < 1.0f)
+         if (AL_intensity < max_AL_intensity)
          {
-            output_channels[CH_RED]   = (int)((float)channels[CH_RED]   * scale_factor);
-            output_channels[CH_WHITE] = (int)((float)channels[CH_WHITE] * scale_factor);
-            output_channels[CH_BLUE]  = (int)((float)channels[CH_BLUE]  * scale_factor);
+            float scale =
+            AL_intensity /
+               ( AL_mapping[0] * unit_channels[0] +
+                 AL_mapping[1] * unit_channels[1] +
+                 AL_mapping[2] * unit_channels[2] );
+
+            output_channels[CH_RED]   = (int)( scale * unit_channels[0]);
+            output_channels[CH_WHITE] = (int)( scale * unit_channels[1]);
+            output_channels[CH_BLUE]  = (int)( scale * unit_channels[2]);
+         } else {
+            output_channels[CH_RED]   = 99;
+            output_channels[CH_WHITE] = 99;
+            output_channels[CH_BLUE]  = 99;
          }
-         else
-         {
-            output_channels[CH_RED]   = channels[CH_RED];
-            output_channels[CH_WHITE] = channels[CH_WHITE];
-            output_channels[CH_BLUE]  = channels[CH_BLUE];
-         }
+
+Serial.print("desired intensity = ");
+Serial.print(desired_intensity);
+Serial.print(" NL level = ");
+Serial.print( NL_intensity);
+Serial.print(" AL_intensity = ");
+Serial.print(AL_intensity);
+Serial.print(" AL level = ");
+Serial.print (AL_mapping[0]);
+Serial.print (", ");
+Serial.print (AL_mapping[1]);
+Serial.print (", ");
+Serial.print (AL_mapping[2]);
+Serial.print(" unit channels = ");
+Serial.print (unit_channels[0]);
+Serial.print (", ");
+Serial.print (unit_channels[1]);
+Serial.print (", ");
+Serial.print (unit_channels[2]);
+Serial.println();
+
+Serial.print ("output AL intensity = ");
+Serial.print (output_channels[CH_RED]   * AL_mapping[0] +
+              output_channels[CH_WHITE] * AL_mapping[1] +
+              output_channels[CH_BLUE]  * AL_mapping[2]);
+Serial.println();
       }
       else
       {
