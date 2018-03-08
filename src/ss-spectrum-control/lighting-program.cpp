@@ -793,31 +793,6 @@ void LightingProgram::tick()
             output_channels[CH_BLUE]  = 99;
          }
 
-Serial.print("desired intensity = ");
-Serial.print(desired_intensity);
-Serial.print(" NL level = ");
-Serial.print( NL_intensity);
-Serial.print(" AL_intensity = ");
-Serial.print(AL_intensity);
-Serial.print(" AL level = ");
-Serial.print (AL_mapping[0]);
-Serial.print (", ");
-Serial.print (AL_mapping[1]);
-Serial.print (", ");
-Serial.print (AL_mapping[2]);
-Serial.print(" unit channels = ");
-Serial.print (unit_channels[0]);
-Serial.print (", ");
-Serial.print (unit_channels[1]);
-Serial.print (", ");
-Serial.print (unit_channels[2]);
-Serial.println();
-
-Serial.print ("output AL intensity = ");
-Serial.print (output_channels[CH_RED]   * AL_mapping[0] +
-              output_channels[CH_WHITE] * AL_mapping[1] +
-              output_channels[CH_BLUE]  * AL_mapping[2]);
-Serial.println();
       }
       else
       {
