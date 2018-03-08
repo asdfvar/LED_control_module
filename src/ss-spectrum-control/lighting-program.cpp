@@ -740,8 +740,6 @@ void LightingProgram::tick()
       /*
       ** RWB to AL intensity mapping
       */
-// TODO: remove this
-//      const float AL_mapping[3] = { 0.0859f, 0.0429f, 0.0429f };
 
       const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
       const float sum_unit_AL_mapping = 1.6327f;
