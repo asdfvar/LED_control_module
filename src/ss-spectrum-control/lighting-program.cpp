@@ -523,7 +523,8 @@ void LightingProgram::begin()
       Serial.println(EEPROM.length());
    }
 
-   last_AL_update_time = now.secondstime();
+   // initiate the last update time
+   last_update_time = now.secondstime();
 
    loadCalendar();
    loadLightControlSettings();
@@ -663,8 +664,7 @@ bool LightingProgram::set_enable_light_control( bool setting )
 void LightingProgram::tick()
 {
 
-   if (enabled == false)
-      return;
+   if (enabled == false) return;
 
    if (calendar_enabled)
    {
@@ -721,11 +721,11 @@ void LightingProgram::tick()
       }
    }
 
-   // update required artificial light-level information after set amount of time (seconds)
+   // updates to perform at specified time increments
    const int update_delay = 5;
-   if ( now.secondstime() >= last_AL_update_time + update_delay )
+   if ( now.secondstime() >= last_update_time + update_delay )
    {
-      last_AL_update_time = now.secondstime();
+      last_update_time = now.secondstime();
 
       // read the natural light-level intensity
       read_NL_intensity(); 
@@ -737,12 +737,9 @@ void LightingProgram::tick()
          AL_intensity = 0;
       }
 
-      /*
-      ** RWB to AL intensity mapping
-      */
-
+      // unit vector specifying the relation of RWB intensities
       const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
-      const float sum_unit_AL_mapping = 1.6327f;
+      const float sum_unit_AL_mapping = 1.6327f; // sum (unit AL mapping)
 
       float scale = ((float)(max_AL_intensity)) / (99.0f * sum_unit_AL_mapping);
 
@@ -768,12 +765,16 @@ void LightingProgram::tick()
                                  ((float)channels[CH_WHITE]) * norm_fact,
                                  ((float)channels[CH_BLUE])  * norm_fact };
 
-      // modify the output color channels if we are using the NL intensity control
+      // modify the output color channels if the NL intensity control is being used
       if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
            NL_intensity > 0                                                         &&
            enable_light_control )
       {
 
+         // solving for output_channels such that:
+         //                  AL_mapping \dot output_channels = AL_intensity
+         // where
+         //                      output_channels = scale * unit_channels
          if (AL_intensity < max_AL_intensity)
          {
             float scale =
@@ -799,9 +800,7 @@ void LightingProgram::tick()
          output_channels[CH_BLUE]  = channels[CH_BLUE];
       }
 
-      /*
-      ** send updated output channel colors to the hardware
-      */
+      // send updated output channel colors to the hardware
       sendProgrammedUpdate();
    }
 

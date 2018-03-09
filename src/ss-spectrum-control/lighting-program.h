@@ -196,7 +196,7 @@ class LightingProgram
       void initialVeg();
       void initialBloom();
 
-      long last_AL_update_time;
+      long last_update_time;
       uint16_t AL_intensity; // artificial light-level intensity
       uint16_t max_AL_intensity; // max artificial light-level intensity
       uint16_t NL_intensity; // natural light-level intensity
