@@ -97,7 +97,7 @@ void WLightControl::touch(uint16_t x, uint16_t y)
       else if (z_AL_setting_edit)
       {
          uint16_t max_light_level = lp.get_max_AL_intensity();
-         max_light_level          = min (max_light_level - 10, 99);
+         max_light_level          = max (max_light_level - 10, 0);
          lp.set_max_AL_intensity( max_light_level );
          lp.saveMaxLightControl( max_light_level );
       }
@@ -113,7 +113,7 @@ void WLightControl::touch(uint16_t x, uint16_t y)
       else if (z_AL_setting_edit)
       {
          uint16_t max_light_level = lp.get_max_AL_intensity();
-         max_light_level          = min (max_light_level - 1, 99);
+         max_light_level          = max (max_light_level - 1, 0);
          lp.set_max_AL_intensity( max_light_level );
          lp.saveMaxLightControl( max_light_level );
       }
