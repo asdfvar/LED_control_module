@@ -194,6 +194,13 @@ class WBasicEditProgram : public WMenuBase {
 
 extern WBasicEditProgram basic_edit_program_menu;
 
+class WuvbMenu : public WMenuBase {
+   virtual void paint();
+   virtual void touch(uint16_t x, uint16_t y);
+};
+
+extern WuvbMenu uvb_menu;
+
 class WAdvancedEditProgram : public WMenuBase {
    virtual void paint();
    virtual void touch(uint16_t x, uint16_t y);

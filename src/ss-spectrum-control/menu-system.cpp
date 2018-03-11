@@ -9,6 +9,7 @@ WEditCountdownDuration edit_countdown_duration_menu;
 WProgramList           program_list_menu;
 WEditProgramName       edit_program_name;
 WBasicEditProgram      basic_edit_program_menu;
+WuvbMenu               uvb_menu;
 WAdvancedEditProgram   advanced_edit_program_menu;
 WAreYouSure            are_you_sure_menu;
 WEditCalendar          edit_calendar_menu;

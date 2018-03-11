@@ -1,13 +1,12 @@
 #include "menu-system.h"
 #include "lighting-program.h"
 
-static const WLabel prog_index(    1, 100, 0);
-static const WLabel active_button( 9, 205, 0);
-
-static const WLabel prog_name(     9,  65, 55);
-static const WLabel rename_button( 6, 238, 55);
-
+static const WLabel prog_index(    1,  100, 0);
+static const WLabel active_button( 9,  205, 0);
+static const WLabel prog_name(     9,   65, 55);
+static const WLabel rename_button( 6,  238, 55);
 static const WLabel edit_button(  10,   20, 110);
+static const WLabel uvb_button(    5,  165, 110);
 static const WLabel clear_button(  5,  248, 110);
 
 static void paint_active_button()
@@ -24,12 +23,11 @@ static void paint_new_program()
    WLabel::paint(F("Program#"),   5,  0, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
    prog_index.paint( (uint8_t)(lp.getLoadedProgram() + 1), ILI9341_GREEN, ILI9341_BLACK);
    paint_active_button();
-
    WLabel::paint(F("Name:"),      5, 55, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
    prog_name.paint(lp.getLoadedProgramName(), ILI9341_GREEN, ILI9341_BLACK);
    rename_button.paint(F("RENAME"), ILI9341_GREEN, DARK_COLOR);
-
    edit_button.paint(F("EDIT STEPS"), ILI9341_GREEN, DARK_COLOR);
+   uvb_button.paint(F("UVB"), ILI9341_GREEN, DARK_COLOR);
    clear_button.paint(F("CLEAR"), ILI9341_GREEN, DARK_COLOR);
 
 }
@@ -74,6 +72,9 @@ void WProgramList::touch(uint16_t x, uint16_t y)
 
    else if (edit_button.hit(x, y))
       menu.setMenu(basic_edit_program_menu);
+
+   else if (uvb_button.hit(x, y))
+      menu.setMenu(uvb_menu);
 
    else if (rename_button.hit(x, y))
       menu.setMenu(edit_program_name);
