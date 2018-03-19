@@ -79,6 +79,12 @@ class LightingProgram
       // save enable light control parameter to the EEPROM
       void saveEnableLightControl( bool enabled );
 
+      // save UVB on time
+      void saveUVBonTime (struct program_step step);
+
+      // load UVB on time
+      struct program_step loadUVBonTime (void);
+
       // edit active program index
       inline uint8_t getActiveProgram() const { return settings.active_program; }
       void setActiveProgram(uint8_t index);

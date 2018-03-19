@@ -154,8 +154,9 @@ void loop()
       debouncer.nohit();
    }
 
-   if (debouncer.touched())
+   if (debouncer.touched()) {
       menu.touch(debouncer.x(), debouncer.y());
+   }
 
    repeatedUpdatePoll();
 

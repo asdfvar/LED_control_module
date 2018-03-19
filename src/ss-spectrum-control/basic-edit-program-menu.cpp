@@ -63,8 +63,7 @@ static void total_on_time(uint8_t *hours, uint8_t *minutes)
    uint16_t start = LightingProgram::to_minutes(&on_step);
    uint16_t end = LightingProgram::to_minutes(&off_step);
 
-   if (end < start)
-      end += 24 * 60;
+   if (end < start) end += 24 * 60;
 
    LightingProgram::from_minutes(hours, minutes, (end - start));
 }
