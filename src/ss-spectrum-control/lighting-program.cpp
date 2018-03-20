@@ -17,6 +17,7 @@
 #define MAX_LIGHT_CONTROL_OFFSET (LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t       ))
 #define ENABLE_LIGHT_CONTROL_OFFSET (MAX_LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( uint16_t    ))
 #define UVB_ON_TIME_OFFSET (ENABLE_LIGHT_CONTROL_OFFSET - CRC_LENGTH - sizeof( struct program_step    ))
+#define UVB_OFF_TIME_OFFSET (UVB_ON_TIME_OFFSET - CRC_LENGTH - sizeof( struct program_step   ))
 
 uint16_t LightingProgram::to_minutes(const struct program_step *s)
 {
@@ -244,6 +245,19 @@ struct program_step LightingProgram::loadUVBonTime (void)
 {
    struct program_step step;
    loadEEPBytes (UVB_ON_TIME_OFFSET, &step, sizeof(step));
+
+   return step;
+}
+
+void LightingProgram::saveUVBoffTime (struct program_step step)
+{
+   saveEEPBytes(UVB_OFF_TIME_OFFSET, &step, sizeof(step));
+}
+
+struct program_step LightingProgram::loadUVBoffTime (void)
+{
+   struct program_step step;
+   loadEEPBytes (UVB_OFF_TIME_OFFSET, &step, sizeof(step));
 
    return step;
 }

@@ -18,8 +18,6 @@ static struct program_step off_step;
 static const WLabel on_hour_label   (2, 80,  60);
 static const WLabel on_minute_label (2, 140, 60);
 
-   // TODO: off time save and load and modify
-
 static const WLabel off_hour_label   (2, 80,  120);
 static const WLabel off_minute_label (2, 140, 120);
 
@@ -29,7 +27,8 @@ void WuvbMenu::paint()
 {
    // load on/off step at start of invocation of this menu
    if (!initial) {
-      on_step = lp.loadUVBonTime();
+      on_step  = lp.loadUVBonTime();
+      off_step = lp.loadUVBoffTime();
       initial = true;
    }
 
@@ -86,11 +85,18 @@ void WuvbMenu::touch(uint16_t x, uint16_t y)
       if (mode == EDIT_ON_HOUR) {
          on_step.hour += 1;
          if (on_step.hour >= 24) on_step.hour = 23;
-         lp.saveUVBonTime( on_step );
       }
       else if (mode == EDIT_ON_MINUTE) {
          on_step.minute += 1;
          if (on_step.minute >= 60) on_step.minute = 59;
+      }
+      if (mode == EDIT_OFF_HOUR) {
+         off_step.hour += 1;
+         if (off_step.hour >= 24) off_step.hour = 23;
+      }
+      else if (mode == EDIT_OFF_MINUTE) {
+         off_step.minute += 1;
+         if (off_step.minute >= 60) off_step.minute = 59;
       }
    }
 
@@ -98,15 +104,58 @@ void WuvbMenu::touch(uint16_t x, uint16_t y)
       if (mode == EDIT_ON_HOUR) {
          on_step.hour += 10;
          if (on_step.hour >= 24) on_step.hour = 24;
-         lp.saveUVBonTime( on_step );
       }
       else if (mode == EDIT_ON_MINUTE) {
          on_step.minute += 10;
          if (on_step.minute >= 60) on_step.minute = 59;
       }
+      if (mode == EDIT_OFF_HOUR) {
+         off_step.hour += 10;
+         if (off_step.hour >= 24) off_step.hour = 24;
+      }
+      else if (mode == EDIT_OFF_MINUTE) {
+         off_step.minute += 10;
+         if (off_step.minute >= 60) off_step.minute = 59;
+      }
    }
 
-   // TODO: down_slow and down_fast
+   else if (down_slow.hit (x,y)) {
+      if (mode == EDIT_ON_HOUR) {
+         if (on_step.hour <= 1) on_step.hour = 0;
+         else on_step.hour -= 1;
+      }
+      else if (mode == EDIT_ON_MINUTE) {
+         on_step.minute -= 1;
+         if (on_step.minute <= 0) on_step.minute = 0;
+      }
+      if (mode == EDIT_OFF_HOUR) {
+         if (off_step.hour <= 1) off_step.hour = 0;
+         else off_step.hour -= 1;
+      }
+      else if (mode == EDIT_OFF_MINUTE) {
+         off_step.minute -= 1;
+         if (off_step.minute <= 0) off_step.minute = 0;
+      }
+   }
+
+   else if (down_fast.hit (x,y)) {
+      if (mode == EDIT_ON_HOUR) {
+         if (on_step.hour <= 10) on_step.hour = 0;
+         else on_step.hour -= 10;
+      }
+      else if (mode == EDIT_ON_MINUTE) {
+         if (on_step.minute <= 10) on_step.minute = 0;
+         else on_step.minute -= 10;
+      }
+      if (mode == EDIT_OFF_HOUR) {
+         if (off_step.hour <= 10) off_step.hour = 0;
+         else off_step.hour -= 10;
+      }
+      else if (mode == EDIT_OFF_MINUTE) {
+         if (off_step.minute <= 10) off_step.minute = 0;
+         else off_step.minute -= 10;
+      }
+   }
 
    // redisplay after update
    this->paint();
@@ -114,6 +163,7 @@ void WuvbMenu::touch(uint16_t x, uint16_t y)
    if (save_button.hit (x, y)) {
       mode = EDIT_NEITHER;
       lp.saveUVBonTime( on_step );
+      lp.saveUVBoffTime( off_step );
       initial = false;
       menu.setMenu (program_list_menu);
    }

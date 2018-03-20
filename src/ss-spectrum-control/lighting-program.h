@@ -82,8 +82,14 @@ class LightingProgram
       // save UVB on time
       void saveUVBonTime (struct program_step step);
 
+      // save UVB off time
+      void saveUVBoffTime (struct program_step step);
+
       // load UVB on time
       struct program_step loadUVBonTime (void);
+
+      // load UVB off time
+      struct program_step loadUVBoffTime (void);
 
       // edit active program index
       inline uint8_t getActiveProgram() const { return settings.active_program; }
