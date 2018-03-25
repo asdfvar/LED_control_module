@@ -8,6 +8,8 @@
 #include "touch-debounce.h"
 
 //#define ROTATE_DISPLAY
+#define TIME_SYNC_LENGTH    3600000  // milliseconds / hour
+#define TIME_OVERFLOW_CHECK 86400000 // milliseconds / day
 
 static WLabel debug_display1( 2, 201, 60  );
 static WLabel debug_display2( 2, 20,  60  );
@@ -82,7 +84,57 @@ static void update_now()
    }
    now = rtc_now;
 #else
-   now = rtc.now();
+   static unsigned long lastMillis = millis();
+   static DateTime lastTime = now;
+   static bool invokeRTC = true;
+
+   // occasionally, calls to the RTC will hang. to mitigate
+   // this, calls to the RTC are made only once per hour (or
+   // whichever time-length interval is defined by
+   // TIME_SYNC_LENGTH) to sync with the current time.
+   // otherwise, time is updated from the less accurate
+   // built-in clock
+
+   // invoke the RTC once per time interval as defined
+   // by TIME_SYNC_LENGTH and at start
+   if (invokeRTC)
+   {
+      // set the current time
+      now = rtc.now();
+
+      // set flag to call internal clock for the next hour
+      invokeRTC = false;
+
+      // set the last millisecond count
+      lastMillis = millis();
+
+      // set the last time update since the RTC update
+      lastTime = now;
+   }
+   else
+   {
+      unsigned long nowMillis   = millis();
+      unsigned long deltaMillis = nowMillis - lastMillis;
+
+      // check for overflow by comparing the number of milliseconds in a day
+      // to the difference between the current millisecond count from the previous
+      // (comparing the number of milliseconds in a day).
+      // overflow happens every ~49.7 days
+      if (deltaMillis <= TIME_OVERFLOW_CHECK) {
+         now = lastTime + TimeSpan ((uint32_t)(deltaMillis / 1000));
+      } else {
+
+         // set flag to invoke the RTC
+         invokeRTC = true;
+
+         // call this routine again with the RTC flag set
+         update_now();
+      }
+
+      // re-sync the clock with the RTC chip after the time
+      // has surpassed the interval defined by TIME_SYNC_LENGTH
+      if (deltaMillis > TIME_SYNC_LENGTH) invokeRTC = true;
+   }
 #endif
 }
 
