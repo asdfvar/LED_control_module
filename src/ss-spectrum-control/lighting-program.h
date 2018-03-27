@@ -2,6 +2,7 @@
 #define LIGHTING_PROGRAM_H
 
 #include "RTClib.h"
+#include "update_time.h"
 
 #define PROGRAM_STEPS		20
 #define PROGRAM_NAME_LEN	 8
@@ -57,6 +58,16 @@ class LightingProgram
 
       // once every second, tick tock, tick tock.
       void tick();
+
+      // time-related methods
+      DateTime now_DateTime (void);
+      void     update_time (bool invokeRTC);
+      uint16_t now_year    (void) const;
+      uint8_t  now_month   (void) const;
+      uint8_t  now_day     (void) const;
+      uint8_t  now_hour    (void) const;
+      uint8_t  now_minute  (void) const;
+      uint8_t  now_second  (void) const;
 
       // load program from EEPROM: should only be done when not running
       void loadProgram(uint8_t index);
@@ -212,10 +223,15 @@ class LightingProgram
       // figure out what active phase we are in (if any)
       bool findActivePhase(uint8_t &phase);
 
+      // I2C RTC (Real-Time Clock)
+      RTC_DS3231 rtc;
+
+      // place holder to hold the current time
+      DateTime now;
+
 };
 
 extern LightingProgram lp;
-extern DateTime now;
 extern RTC_DS3231 rtc;
 
 #endif /* LIGHTING_PROGRAM_H */

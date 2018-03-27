@@ -498,6 +498,13 @@ void LightingProgram::forceStep()
 
 void LightingProgram::begin()
 {
+
+   // start the real-time clock
+   rtc.begin();
+
+   // update the current time based on the real-time clock
+   update_time (true);
+
    if (sizeof(program) > EEPROM.length())
    {
       Serial.println("woops");
@@ -533,6 +540,11 @@ void LightingProgram::restart()
    fade_steps_left = 0;
    enabled = true;
    forceStep();
+
+   // update the time based on the real-time clock
+   update_time (true);
+
+   last_AL_update_time = now.secondstime();
 }
 
 void LightingProgram::stop(void)
@@ -635,6 +647,9 @@ bool LightingProgram::set_enable_light_control( bool setting )
 void LightingProgram::tick()
 {
 
+   // update the time based on the internal clock
+   update_time (false);
+
    if (enabled == false)
       return;
 
@@ -695,7 +710,7 @@ void LightingProgram::tick()
 
    // update required artificial light-level information after set amount of time (seconds)
    const int update_delay = 5;
-   if ( now.secondstime() >= last_AL_update_time + update_delay )
+   if ( now.secondstime() >= last_AL_update_time + update_delay)
    {
       last_AL_update_time = now.secondstime();
 
