@@ -76,9 +76,9 @@ void setup(void)
 void loop()
 {
    lp.tick();
-   menu.tick();
    if ( lp.now_second() != last_second )
    {
+      menu.tick();
       last_second = lp.now_second();
       serialCommTick();
    }
