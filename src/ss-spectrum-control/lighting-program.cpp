@@ -518,11 +518,13 @@ void LightingProgram::begin()
    loadLightControlSettings();
    loadSettings();
 
-   output_channels[0] = channels[CH_RED];
-   output_channels[1] = channels[CH_WHITE];
-   output_channels[2] = channels[CH_BLUE];
-
    restart();
+
+   output_channels[CH_RED]   = channels[CH_RED];
+   output_channels[CH_WHITE] = channels[CH_WHITE];
+   output_channels[CH_BLUE]  = channels[CH_BLUE];
+
+   sendProgrammedUpdate();
 }
 
 void LightingProgram::restart()
