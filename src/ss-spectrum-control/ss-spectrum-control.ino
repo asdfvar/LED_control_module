@@ -100,6 +100,7 @@ void setup(void)
     tft.setRotation(3); 
     menu.begin();
 
+#if 0
 ctp.writeRegister8(0x87, 10);
 ctp.writeRegister8(0x88, 8);
 ctp.writeRegister8(0x89, 40);
@@ -109,6 +110,7 @@ ctp.writeRegister8(0x93, 216);
 ctp.writeRegister8(0x94, 255);
 ctp.writeRegister8(0x95, 251);
 ctp.writeRegister8(0x96, 170);
+#endif
 }
 
 void loop()
