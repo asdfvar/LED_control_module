@@ -16,7 +16,10 @@ static void common_proc( void );
 
 void WLightControl::paint()
 {
+   // desired intensity level
    WLabel::paint(      F("SET POINT"    ), 100, 10,  ILI9341_GREEN, ILI9341_BLACK, 2, 0);
+
+   // measured intensity level
    WLabel::paint(      F("MEASURED"     ), 100, 60,  ILI9341_GREEN, ILI9341_BLACK, 2, 0);
    WLabel::paint(      F("MAX AL LEVEL" ), 100, 110, ILI9341_GREEN, ILI9341_BLACK, 2, 0);
    clear_button.paint( F("RESET"),      ILI9341_RED,   DARK_COLOR);

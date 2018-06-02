@@ -785,14 +785,21 @@ void LightingProgram::tick()
 
       // unit vector specifying the relation of RWB intensities
       const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
-      const float sum_unit_AL_mapping = 1.6327f; // sum (unit AL mapping)
 
-      float scale = ((float)(max_AL_intensity)) / (99.0f * sum_unit_AL_mapping);
+      // max possible values for the output channels which are bound above
+      // by the current channel settings
+      const float max_output_channels[3] = { (float)channels[CH_RED],
+                                             (float)channels[CH_WHITE],
+                                             (float)channels[CH_BLUE] };
+
+      float k = ((float)(max_AL_intensity)) / (max_output_channels[0] * unit_AL_mapping[CH_RED  ] +
+                                               max_output_channels[1] * unit_AL_mapping[CH_WHITE] +
+                                               max_output_channels[2] * unit_AL_mapping[CH_BLUE ]);
 
       // artificial-light mapping. Scaled for [0, 99] -> [0, max AL intensity]
-      float AL_mapping[3] = { unit_AL_mapping[0] * scale,
-                              unit_AL_mapping[1] * scale,
-                              unit_AL_mapping[2] * scale };
+      float AL_mapping[3] = { unit_AL_mapping[0] * k,
+                              unit_AL_mapping[1] * k,
+                              unit_AL_mapping[2] * k };
 
       int sum_sqr_channels = (channels[CH_RED]   * channels[CH_RED]   +
                               channels[CH_WHITE] * channels[CH_WHITE] +
@@ -823,19 +830,19 @@ void LightingProgram::tick()
          //                      output_channels = scale * unit_channels
          if (AL_intensity < max_AL_intensity)
          {
-            float scale =
+            float c =
             AL_intensity /
                ( AL_mapping[0] * unit_channels[0] +
                  AL_mapping[1] * unit_channels[1] +
                  AL_mapping[2] * unit_channels[2] );
 
-            output_channels[CH_RED]   = (int)( scale * unit_channels[0]);
-            output_channels[CH_WHITE] = (int)( scale * unit_channels[1]);
-            output_channels[CH_BLUE]  = (int)( scale * unit_channels[2]);
+            output_channels[CH_RED]   = (int)(c * unit_channels[0]);
+            output_channels[CH_WHITE] = (int)(c * unit_channels[1]);
+            output_channels[CH_BLUE]  = (int)(c * unit_channels[2]);
          } else {
-            output_channels[CH_RED]   = 99;
-            output_channels[CH_WHITE] = 99;
-            output_channels[CH_BLUE]  = 99;
+            output_channels[CH_RED]   = channels[CH_RED];
+            output_channels[CH_WHITE] = channels[CH_WHITE];
+            output_channels[CH_BLUE]  = channels[CH_BLUE];
          }
 
       }
