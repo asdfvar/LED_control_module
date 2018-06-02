@@ -53,8 +53,8 @@ void WEditCurrentTime::paint()
 {
    lp.stop();
 
-   hour   = now.hour();
-   minute = now.minute();
+   hour   = lp.now_hour();
+   minute = lp.now_minute();
 
    update_widget_for(E_HOURS, ILI9341_BLACK);
    WLabel::paint(F(":"), 140, 80, ILI9341_GREEN, ILI9341_BLACK, 4, 0);
@@ -81,11 +81,12 @@ static void edit_value(int chg)
 
 void WEditCurrentTime::touch(uint16_t x, uint16_t y)
 {
+   DateTime modified_time;
    if (save_button.hit(x, y)) {
-      now = DateTime(now.year(), now.month(), now.day(), hour, minute);
-      rtc.adjust(now);
+      modified_time = DateTime (lp.now_year(), lp.now_month(), lp.now_day(), hour, minute);
+      rtc.adjust (modified_time);
       lp.restart();
-      menu.setMenu(setup_menu);
+      menu.setMenu (setup_menu);
    }
 #if 0
    if (home_button.hit(x, y))

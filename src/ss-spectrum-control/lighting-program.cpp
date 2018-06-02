@@ -544,6 +544,13 @@ void LightingProgram::forceStep()
 
 void LightingProgram::begin()
 {
+
+   // start the real-time clock
+   rtc.begin();
+
+   // update the current time based on the real-time clock
+   update_time (true);
+
    if (sizeof(program) > EEPROM.length())
    {
       Serial.println("woops");
@@ -552,17 +559,19 @@ void LightingProgram::begin()
    }
 
    // initiate the last update time
-   last_update_time = now.secondstime();
+   last_AL_update_time = now.secondstime();
 
    loadCalendar();
    loadLightControlSettings();
    loadSettings();
 
-   output_channels[0] = channels[CH_RED];
-   output_channels[1] = channels[CH_WHITE];
-   output_channels[2] = channels[CH_BLUE];
-
    restart();
+
+   output_channels[CH_RED]   = channels[CH_RED];
+   output_channels[CH_WHITE] = channels[CH_WHITE];
+   output_channels[CH_BLUE]  = channels[CH_BLUE];
+
+   sendProgrammedUpdate();
 }
 
 void LightingProgram::restart()
@@ -580,6 +589,11 @@ void LightingProgram::restart()
    fade_steps_left = 0;
    enabled = true;
    forceStep();
+
+   // update the time based on the real-time clock
+   update_time (true);
+
+   last_AL_update_time = now.secondstime();
 }
 
 void LightingProgram::stop(void)
@@ -692,9 +706,11 @@ bool LightingProgram::set_enable_light_control( bool setting )
 void LightingProgram::tick()
 {
 
-   // TODO: incorporate the UVB on/off times
+   // update the time based on the internal clock
+   update_time (false);
 
-   if (enabled == false) return;
+   if (enabled == false)
+      return;
 
    if (calendar_enabled)
    {
@@ -753,9 +769,9 @@ void LightingProgram::tick()
 
    // updates to perform at specified time increments
    const int update_delay = 5;
-   if ( now.secondstime() >= last_update_time + update_delay )
+   if ( now.secondstime() >= last_AL_update_time + update_delay)
    {
-      last_update_time = now.secondstime();
+      last_AL_update_time = now.secondstime();
 
       // read the natural light-level intensity
       read_NL_intensity(); 

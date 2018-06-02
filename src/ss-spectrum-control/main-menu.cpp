@@ -60,16 +60,16 @@ void WMainMenu::tick()
       }
    }
 
-   if (now.hour() != last_hour) {
-      last_hour = now.hour();
+   if (lp.now_hour() != last_hour) {
+      last_hour = lp.now_hour();
       now_hours.paint_two_digits(last_hour, ILI9341_GREEN, ILI9341_BLACK);
    }
-   if (now.minute() != last_minute) {
-      last_minute = now.minute();
+   if (lp.now_minute() != last_minute) {
+      last_minute = lp.now_minute();
       now_minutes.paint_two_digits(last_minute, ILI9341_GREEN, ILI9341_BLACK);
    }
-   if (now.second() != last_second) {
-      last_second = now.second();
+   if (lp.now_second() != last_second) {
+      last_second = lp.now_second();
       now_seconds.paint_two_digits(last_second, ILI9341_GREEN, ILI9341_BLACK);
    }
    if (last_rwhb[CH_RED] != output_channels[CH_RED]) {

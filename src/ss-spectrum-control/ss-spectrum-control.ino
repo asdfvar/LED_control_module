@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include "Adafruit_ILI9341.h"
-#include "Adafruit_FT6236.h"
+#include "Adafruit_FT6206.h"
 #include "RTClib.h"
 #include "lighting-program.h"
 #include "serial-comm.h"
@@ -19,14 +19,11 @@ static WLabel debug_display4( 2, 20,  100 );
 #define TFT_DC 9
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
 
-// The FT6236 uses hardware I2C (SCL/SDA)
-Adafruit_FT6236 ctp = Adafruit_FT6236();
+// The FT6206 uses hardware I2C (SCL/SDA)
+Adafruit_FT6206 ctp = Adafruit_FT6206();
 
 // Debouncing for the touch screen controller
 TouchDebounce debouncer;
-
-// I2C RTC
-RTC_DS3231 rtc;
 
 // Our lighting programs
 LightingProgram lp;
@@ -36,9 +33,6 @@ MenuSystem menu;
 
 // Last second
 static uint8_t last_second;
-
-// Current time
-DateTime now;
 
 /* needed only on the teensy
  * the rtc is not reset properly, and if we reset during a read
@@ -59,42 +53,13 @@ static void whack_i2c_with_clocks()
    pinMode(19, INPUT);
 }
 
-static void update_now()
-{
-#ifdef FAST_CLOCK
-   static bool initted;
-   static unsigned long last = 0;
-   static DateTime rtc_now;
-   static TimeSpan ex(1);
-
-   unsigned long m_now = millis();
-
-   if (initted == false)
-   {
-      last = m_now;
-      rtc_now = rtc.now();
-      initted = true;
-   }
-   if (m_now != last)
-   {
-      rtc_now = (rtc_now + ex);
-      last = m_now;
-   }
-   now = rtc_now;
-#else
-   now = rtc.now();
-#endif
-}
-
 void setup(void)
 {
    whack_i2c_with_clocks();
    Serial.begin(115200);
    initSerialComms();
    tft.begin();
-   rtc.begin();
    debouncer.begin();
-   update_now();
 
    lp.begin();
 
@@ -110,12 +75,11 @@ void setup(void)
 
 void loop()
 {
-   update_now();
-   if ( now.second() != last_second )
+   lp.tick();
+   if ( lp.now_second() != last_second )
    {
-      last_second = now.second();
-      lp.tick();
       menu.tick();
+      last_second = lp.now_second();
       serialCommTick();
    }
 
