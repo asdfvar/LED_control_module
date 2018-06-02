@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include "Adafruit_ILI9341.h"
-#include "Adafruit_FT6236.h"
+#include "Adafruit_FT6206.h"
 #include "RTClib.h"
 #include "lighting-program.h"
 #include "serial-comm.h"
@@ -19,8 +19,8 @@ static WLabel debug_display4( 2, 20,  100 );
 #define TFT_DC 9
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC);
 
-// The FT6236 uses hardware I2C (SCL/SDA)
-Adafruit_FT6236 ctp = Adafruit_FT6236();
+// The FT6206 uses hardware I2C (SCL/SDA)
+Adafruit_FT6206 ctp = Adafruit_FT6206();
 
 // Debouncing for the touch screen controller
 TouchDebounce debouncer;
