@@ -811,13 +811,7 @@ void LightingProgram::tick()
                                  channels[CH_WHITE] * channels[CH_WHITE] +
                                  channels[CH_BLUE]  * channels[CH_BLUE]);
 
-         float norm_fact;
-         if (sum_sqr_channels > 0)
-         {
-            norm_fact = 1.0f / sqrtf ((float)sum_sqr_channels);
-         } else {
-            norm_fact = 1.0f;
-         }
+         float norm_fact = 1.0f / sqrtf ((float)sum_sqr_channels);
 
          // channel vector of unit length
          float unit_channels[3] = { ((float)channels[CH_RED])   * norm_fact,
