@@ -783,55 +783,54 @@ void LightingProgram::tick()
          AL_intensity = 0;
       }
 
-      // unit vector specifying the relation of RWB intensities
-      const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
-
-      // max possible values for the output channels which are bound above
-      // by the current channel settings
-      const float max_output_channels[3] = { (float)channels[CH_RED],
-                                             (float)channels[CH_WHITE],
-                                             (float)channels[CH_BLUE] };
-
-      float k = ((float)(max_AL_intensity)) / (max_output_channels[0] * unit_AL_mapping[CH_RED  ] +
-                                               max_output_channels[1] * unit_AL_mapping[CH_WHITE] +
-                                               max_output_channels[2] * unit_AL_mapping[CH_BLUE ]);
-
-      // artificial-light mapping. Scaled for [0, 99] -> [0, max AL intensity]
-      float AL_mapping[3] = { unit_AL_mapping[0] * k,
-                              unit_AL_mapping[1] * k,
-                              unit_AL_mapping[2] * k };
-
-      int sum_sqr_channels = (channels[CH_RED]   * channels[CH_RED]   +
-                              channels[CH_WHITE] * channels[CH_WHITE] +
-                              channels[CH_BLUE]  * channels[CH_BLUE]);
-
-      float norm_fact;
-      if (sum_sqr_channels > 0)
-      {
-         norm_fact = 1.0f / sqrtf ((float)sum_sqr_channels);
-      } else {
-         norm_fact = 1.0f;
-      }
-
-      // channel vector of unit length
-      float unit_channels[3] = { ((float)channels[CH_RED])   * norm_fact,
-                                 ((float)channels[CH_WHITE]) * norm_fact,
-                                 ((float)channels[CH_BLUE])  * norm_fact };
-
       // modify the output color channels if the NL intensity control is being used
       if ((channels[CH_RED] > 0 || channels[CH_WHITE] > 0 || channels[CH_BLUE] > 0) &&
            NL_intensity > 0                                                         &&
            enable_light_control )
       {
 
+         // unit vector specifying the relation of RWB intensities
+         const float unit_AL_mapping[3]  = { 0.81681f, 0.40793f, 0.40793f };
+
+         // max possible values for the output channels which are bound above
+         // by the current channel settings
+         const float max_output_channels[3] = { (float)channels[CH_RED],
+                                                (float)channels[CH_WHITE],
+                                                (float)channels[CH_BLUE] };
+
+         float k = ((float)(max_AL_intensity)) / (max_output_channels[0] * unit_AL_mapping[0] +
+                                                  max_output_channels[1] * unit_AL_mapping[1] +
+                                                  max_output_channels[2] * unit_AL_mapping[2]);
+
+         // artificial-light mapping. Scaled for [0, 99] -> [0, max AL intensity]
+         float AL_mapping[3] = { unit_AL_mapping[0] * k,
+                                 unit_AL_mapping[1] * k,
+                                 unit_AL_mapping[2] * k };
+
+         int sum_sqr_channels = (channels[CH_RED]   * channels[CH_RED]   +
+                                 channels[CH_WHITE] * channels[CH_WHITE] +
+                                 channels[CH_BLUE]  * channels[CH_BLUE]);
+
+         float norm_fact;
+         if (sum_sqr_channels > 0)
+         {
+            norm_fact = 1.0f / sqrtf ((float)sum_sqr_channels);
+         } else {
+            norm_fact = 1.0f;
+         }
+
+         // channel vector of unit length
+         float unit_channels[3] = { ((float)channels[CH_RED])   * norm_fact,
+                                    ((float)channels[CH_WHITE]) * norm_fact,
+                                    ((float)channels[CH_BLUE])  * norm_fact };
+
          // solving for output_channels such that:
          //                  AL_mapping \dot output_channels = AL_intensity
          // where
-         //                      output_channels = scale * unit_channels
+         //                      output_channels = c * unit_channels
          if (AL_intensity < max_AL_intensity)
          {
-            float c =
-            AL_intensity /
+            float c = AL_intensity /
                ( AL_mapping[0] * unit_channels[0] +
                  AL_mapping[1] * unit_channels[1] +
                  AL_mapping[2] * unit_channels[2] );

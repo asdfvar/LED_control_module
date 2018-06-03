@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+%
+The artificial-light intensity level output from the device is determined from the difference the measured light level is from the desired light level:
+%
+\begin{equation} \label{eq:AL_int}
+AL_{int} = desired - measured
+\end{equation}
+%
+To make up this difference, the artificial-light level is computed from the output channels and the artificial-light level mapping from the following general light-intensity equation:
+\begin{equation} \label{eq:main}
+AL_{mapping} \cdot channels = AL_{level}
+\end{equation}
+%
+both the artificial-light level mapping, $AL_{mapping}$, and the output channels (what we ultimately want to solve for), $channels_{output}$, are three-element real-valued vectors and need to be determined respectively.
+The output channels are a scaled-down vector of the user-set channels.
+The artificial-light level mapping maps the three channels to a light intensity level in the range of $[0, AL_{max}]$.
+$\widehat{AL_{mapping}}$ (vector of unit length) is already known but the magnitude of this mapping is what needs to be determined (this depends on the max value the channels can be and the max AL intensity).
+Let $AL_{mapping} = \bf{k} * \widehat{AL_{mapping}}$ represents the mapping of artificial light-level channels as a product of a scalar $\bf{k}$ and unit vector $\widehat{AL_{mapping}}$. $channels_{set}$ are the current-set channels set by the user and are the maximum the output channels can be.
+Then $AL_{mapping}$ can be determined by solving \eqref{eq:main} for $\bf{k}$ with these substitutions:
+%
+\begin{equation} \label{eq:AL_mapping}
+\left(\bf{k} * \widehat{AL_{mapping}} \right) \cdot channels_{set} = AL_{max}
+\end{equation}
+%
+\begin{equation}
+\bf{k} = \frac{AL_{max}}{\widehat{AL_{mapping}} \cdot channels_{set}}
+\end{equation}
+%
+Now that $AL_{mapping}$ is determined, the output channels can now be determined.
+Like with $AL_{mapping}$ previously, $\widehat{channels_{output}}$ is known but its magnitude isn't. Letting $channels_{output} = \bf{c} * \widehat{channels_{output}}$ and solving \eqref{eq:main} for $\bf{c}$:
+%
+\begin{equation}
+AL_{mapping} \cdot \left( \bf{c} * \widehat{channels_{output}} \right) = AL_{int}
+\end{equation}
+%
+\begin{equation}
+\bf{c} = \frac{AL_{int}}{\widehat{AL_{mapping}} \cdot channels_{output}}
+\end{equation}
+%
+\end{document}
